@@ -325,7 +325,7 @@
             renderQuestion();
         }
 
-        function renderQuestion() {
+        function renderQuestion(animate = true) {
             if (filteredQuizData.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-500 py-10">No questions found for this selection.</div>`;
                 return;
@@ -376,7 +376,7 @@
             ` : '';
 
             container.innerHTML = `
-                <div class="fade-in">
+                <div class="${animate ? 'fade-in' : ''}">
                     <div class="mb-3 flex flex-wrap items-center gap-2">
                         <span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-700">Module ${data.module}</span>
                         ${data.type === 'matching' ? '<span class="bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 text-xs font-bold px-2.5 py-0.5 rounded border border-purple-200 dark:border-purple-700"><i class="fa-solid fa-arrows-left-right mr-1"></i>Matching</span>' : ''}
@@ -641,7 +641,7 @@
             }
             
             matchingSelections[qID][leftItem] = answer;
-            renderQuestion();
+            renderQuestion(false);
         }
         
         function removeMatch(leftItem) {
@@ -651,7 +651,7 @@
             
             if (matchingSelections[qID] && matchingSelections[qID][leftItem]) {
                 delete matchingSelections[qID][leftItem];
-                renderQuestion();
+                renderQuestion(false);
             }
         }
         
@@ -666,7 +666,7 @@
             if (Object.keys(selections).includes(item)) {
                 // Already matched - deselect
                 selectedLeftItem = null;
-                renderQuestion();
+                renderQuestion(false);
                 return;
             }
             
@@ -676,7 +676,7 @@
             } else {
                 selectedLeftItem = item; // Select
             }
-            renderQuestion();
+            renderQuestion(false);
         }
         
         function handleDropZoneClick(answer, matchedLeftItem) {
@@ -702,7 +702,7 @@
                 
                 matchingSelections[qID][selectedLeftItem] = answer;
                 selectedLeftItem = null; // Clear selection
-                renderQuestion();
+                renderQuestion(false);
             } else if (matchedLeftItem) {
                 // No selection but there's a match - remove it
                 removeMatch(matchedLeftItem);
@@ -816,14 +816,14 @@
             }
             
             matchingSelections[qID][leftItem] = answer;
-            renderQuestion();
+            renderQuestion(false);
         }
 
         function selectOption(index) {
             const qID = filteredQuizData[currentQuestionIndex].id;
             if (revealState[qID]) return;
             userAnswers[qID] = index;
-            renderQuestion();
+            renderQuestion(false);
         }
 
         function toggleMultiOption(index) {
@@ -836,7 +836,7 @@
             } else {
                 userAnswers[qID].push(index);
             }
-            renderQuestion();
+            renderQuestion(false);
         }
 
         // selectMatchAnswer is no longer used - replaced by drag and drop
@@ -853,7 +853,7 @@
             // DO NOT auto-populate for matching questions - keep user's wrong answers visible
             // so they can see their mistakes with red highlighting
             
-            renderQuestion();
+            renderQuestion(false);
         }
 
         function resetCurrentQuestion() {
@@ -861,7 +861,7 @@
             userAnswers[qID] = null;
             revealState[qID] = false;
             matchingSelections[qID] = {};
-            renderQuestion();
+            renderQuestion(false);
         }
 
         function nextQuestion() {
