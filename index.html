@@ -99,20 +99,41 @@
             </div>
             <div id="quiz-container" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 relative overflow-hidden min-h-[350px] sm:min-h-[400px] transition-colors"></div>
             <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 sticky bottom-2 sm:bottom-4 z-10">
-                <button id="prev-btn" onclick="prevQuestion()" class="shadow-md px-4 sm:px-6 py-2.5 sm:py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base">
-                    <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Previous</span><span class="sm:hidden">Prev</span>
+                <!-- Desktop: Prev | Reset Reveal | Next -->
+                <!-- Mobile: Reset Reveal (top) | Prev Next (bottom) -->
+                
+                <!-- Prev button - hidden on mobile, shown on desktop -->
+                <button id="prev-btn" onclick="prevQuestion()" class="hidden sm:flex shadow-md px-4 sm:px-6 py-2.5 sm:py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed items-center justify-center gap-2 text-sm sm:text-base">
+                    <i class="fa-solid fa-arrow-left"></i> <span>Previous</span>
                 </button>
-                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                
+                <!-- Reset and Reveal buttons - first row on mobile -->
+                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto order-first sm:order-none">
                     <button id="reset-btn" onclick="resetCurrentQuestion()" class="shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-700 dark:text-yellow-400 rounded-lg font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
                         <i class="fa-solid fa-rotate-right"></i> Reset
+                    </button>
+                    <button id="retake-btn-nav" onclick="retakeQuiz()" class="hidden shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-slate-200 dark:bg-slate-600 border border-slate-300 dark:border-slate-500 text-slate-700 dark:text-slate-200 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors items-center justify-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-arrows-rotate"></i> Retake
                     </button>
                     <button id="reveal-btn" onclick="revealAnswer()" class="shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-400 rounded-lg font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
                         <i class="fa-solid fa-eye"></i> Reveal
                     </button>
                 </div>
-                <button id="next-btn" onclick="nextQuestion()" class="shadow-md px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base">
+                
+                <!-- Next button - hidden on mobile, shown on desktop -->
+                <button id="next-btn-desktop" onclick="nextQuestion()" class="hidden sm:flex shadow-md px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed items-center justify-center gap-2 text-sm sm:text-base">
                     Next <i class="fa-solid fa-arrow-right"></i>
                 </button>
+                
+                <!-- Mobile only: Prev and Next row -->
+                <div class="flex sm:hidden gap-2 w-full order-last">
+                    <button id="prev-btn-mobile" onclick="prevQuestion()" class="shadow-md flex-1 px-4 py-2.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Prev
+                    </button>
+                    <button id="next-btn-mobile" onclick="nextQuestion()" class="shadow-md flex-1 px-4 py-2.5 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm">
+                        Next <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -265,9 +286,12 @@
         const currentQNum = document.getElementById('current-q-num');
         const totalQNum = document.getElementById('total-q-num');
         const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
+        const prevBtnMobile = document.getElementById('prev-btn-mobile');
+        const nextBtnDesktop = document.getElementById('next-btn-desktop');
+        const nextBtnMobile = document.getElementById('next-btn-mobile');
         const revealBtn = document.getElementById('reveal-btn');
         const resetBtn = document.getElementById('reset-btn');
+        const retakeBtnNav = document.getElementById('retake-btn-nav');
 
         function filterQuestions() {
             const filterValue = document.getElementById('module-filter').value;
@@ -279,6 +303,12 @@
             } else {
                 filteredQuizData = allQuizData.filter(q => q.module === filterValue);
             }
+
+            
+            // Reset state when switching tabs
+            userAnswers = {};
+            revealState = {};
+            matchingSelections = {};
             currentQuestionIndex = 0;
             initQuiz();
         }
@@ -329,11 +359,8 @@
             
             const reviewBadge = isReviewMode ? '<span class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-xs font-bold px-2.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-700"><i class="fa-solid fa-magnifying-glass mr-1"></i>Review Mode</span>' : '';
             
-            const retakeButton = isReviewMode ? `
+            const reviewLegend = isReviewMode ? `
                 <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 text-center">
-                    <button onclick="retakeQuiz()" class="px-6 py-3 bg-green-600 dark:bg-green-500 text-white rounded-lg font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors">
-                        <i class="fa-solid fa-rotate-right mr-2"></i>Retake Quiz
-                    </button>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
                         <span class="inline-block w-3 h-3 rounded-full bg-green-500 mr-1"></span>Correct
                         <span class="inline-block w-3 h-3 rounded-full bg-red-500 ml-3 mr-1"></span>Wrong
@@ -354,7 +381,7 @@
                     ${exhibitHtml}
                     ${contentHtml}
                     ${explanationHtml}
-                    ${retakeButton}
+                    ${reviewLegend}
                 </div>
             `;
 
@@ -372,7 +399,7 @@
                 let icon = '<div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-500 flex-shrink-0"></div>';
 
                 if (isSelected && !isRevealed) {
-                    labelClass += " border-blue-500 bg-blue-50";
+                    labelClass += " border-blue-500 bg-blue-50 dark:bg-transparent dark:border-blue-400 dark:shadow-[0_0_15px_rgba(96,165,250,0.4)]";
                     icon = '<div class="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center"><div class="w-2.5 h-2.5 bg-blue-500 rounded-full"></div></div>';
                 }
 
@@ -420,7 +447,7 @@
                 let icon = '<div class="w-5 h-5 rounded border-2 border-slate-300 dark:border-slate-500 flex-shrink-0"></div>';
 
                 if (isSelected && !isRevealed) {
-                    labelClass += " border-blue-500 bg-blue-50 dark:bg-blue-900/30";
+                    labelClass += " border-blue-500 bg-blue-50 dark:bg-transparent dark:border-blue-400 dark:shadow-[0_0_15px_rgba(96,165,250,0.4)]";
                     icon = '<div class="w-5 h-5 rounded border-2 border-blue-500 bg-blue-500 flex items-center justify-center"><i class="fa-solid fa-check text-white text-xs"></i></div>';
                 }
 
@@ -956,30 +983,56 @@
 
         function updateButtons() {
             const qID = filteredQuizData[currentQuestionIndex].id;
-            prevBtn.disabled = currentQuestionIndex === 0;
             
-            // Change Next to Submit on last question
+            // Update Previous buttons
+            const isFirstQuestion = currentQuestionIndex === 0;
+            if (prevBtn) prevBtn.disabled = isFirstQuestion;
+            if (prevBtnMobile) prevBtnMobile.disabled = isFirstQuestion;
+            
+            // Update Next buttons
             const isLastQuestion = currentQuestionIndex === filteredQuizData.length - 1;
-            if (isLastQuestion) {
-                nextBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit';
-                nextBtn.disabled = false;
-                nextBtn.classList.remove('bg-blue-600', 'dark:bg-blue-500', 'hover:bg-blue-700', 'dark:hover:bg-blue-600');
-                nextBtn.classList.add('bg-green-600', 'dark:bg-green-500', 'hover:bg-green-700', 'dark:hover:bg-green-600');
-            } else {
-                nextBtn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
-                nextBtn.disabled = false;
-                nextBtn.classList.remove('bg-green-600', 'dark:bg-green-500', 'hover:bg-green-700', 'dark:hover:bg-green-600');
-                nextBtn.classList.add('bg-blue-600', 'dark:bg-blue-500', 'hover:bg-blue-700', 'dark:hover:bg-blue-600');
-            }
+            const nextButtons = [nextBtnDesktop, nextBtnMobile];
             
-            if (revealState[qID]) {
+            nextButtons.forEach(btn => {
+                if (!btn) return;
+                
+                if (isLastQuestion) {
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="hidden sm:inline">Submit</span><span class="sm:hidden">Submit</span>';
+                    btn.disabled = false;
+                    btn.classList.remove('bg-blue-600', 'dark:bg-blue-500', 'hover:bg-blue-700', 'dark:hover:bg-blue-600');
+                    btn.classList.add('bg-green-600', 'dark:bg-green-500', 'hover:bg-green-700', 'dark:hover:bg-green-600');
+                } else {
+                    btn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
+                    btn.disabled = false;
+                    btn.classList.remove('bg-green-600', 'dark:bg-green-500', 'hover:bg-green-700', 'dark:hover:bg-green-600');
+                    btn.classList.add('bg-blue-600', 'dark:bg-blue-500', 'hover:bg-blue-700', 'dark:hover:bg-blue-600');
+                }
+            });
+            
+            // Check if we are in review mode (all questions revealed)
+            const isReviewMode = filteredQuizData.length > 0 && filteredQuizData.every(q => revealState[q.id]);
+            
+            if (isReviewMode) {
+                // Review Mode: Hide Reveal & Reset, Show Retake
                 revealBtn.style.display = 'none';
-                resetBtn.style.display = 'flex';
-                resetBtn.classList.add('flex-1');
+                resetBtn.style.display = 'none';
+                if (retakeBtnNav) {
+                    retakeBtnNav.style.display = 'flex';
+                    retakeBtnNav.classList.add('flex-1');
+                }
             } else {
-                revealBtn.style.display = 'flex';
-                resetBtn.style.display = 'flex';
-                resetBtn.classList.remove('flex-1');
+                // Normal Mode: Hide Retake, show normal buttons
+                if (retakeBtnNav) retakeBtnNav.style.display = 'none';
+                
+                if (revealState[qID]) {
+                    revealBtn.style.display = 'none';
+                    resetBtn.style.display = 'flex';
+                    resetBtn.classList.add('flex-1');
+                } else {
+                    revealBtn.style.display = 'flex';
+                    resetBtn.style.display = 'flex';
+                    resetBtn.classList.remove('flex-1');
+                }
             }
         }
         
