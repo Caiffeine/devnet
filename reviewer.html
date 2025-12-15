@@ -404,7 +404,7 @@
                     <label class="${labelClass}">
                         <input type="checkbox" name="q${qID}" value="${index}" class="hidden" ${isSelected ? 'checked' : ''} ${isRevealed ? 'disabled' : ''} onchange="toggleMultiOption(${index})">
                         ${icon}
-                        <span class="text-slate-700 font-medium">${opt}</span>
+                        <span class="text-slate-700 dark:text-slate-200 font-medium text-sm sm:text-base">${opt}</span>
                     </label>
                 `;
             });
@@ -428,29 +428,35 @@
             let html = '<div class="grid md:grid-cols-2 gap-4 sm:gap-6">';
             
             // Left column - Draggable items (questions/terms)
-            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-hand-pointer mr-2"></i>Items (Drag these)</h3>';
+            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-hand-pointer mr-2"></i>Items (Tap or Drag)</h3>';
             shuffledLeftItems.forEach((item, idx) => {
                 const isUsed = usedLeftItems.includes(item);
+                const isSelected = selectedLeftItem === item;
                 const matchedAnswer = selections[item];
-                let dragCls = 'drag-item p-2 sm:p-3 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-slate-200 text-sm sm:text-base';
-                if (isUsed) dragCls += ' used';
+                let dragCls = 'drag-item p-2 sm:p-3 border-2 rounded-lg bg-white dark:bg-slate-700 dark:text-slate-200 text-sm sm:text-base cursor-pointer transition-all';
+                if (isUsed) {
+                    dragCls += ' used border-slate-200 dark:border-slate-600';
+                } else if (isSelected) {
+                    dragCls += ' ring-2 ring-blue-500 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/30';
+                } else {
+                    dragCls += ' border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500';
+                }
                 
                 html += `<div class="${dragCls}" 
                     draggable="${!isUsed && !isRevealed}" 
                     data-left-item="${item}" 
+                    onclick="selectLeftItem('${item.replace(/'/g, "\\'")}')" 
                     ondragstart="handleDragStart(event, '${item.replace(/'/g, "\\'")}')" 
-                    ondragend="handleDragEnd(event)"
-                    ontouchstart="handleTouchStart(event, '${item.replace(/'/g, "\\\\'")}')"
-                    ontouchmove="handleTouchMove(event)"
-                    ontouchend="handleTouchEnd(event)">
-                    <i class="fa-solid fa-grip-vertical mr-2 text-slate-400 dark:text-slate-500"></i>${item}
+                    ondragend="handleDragEnd(event)">
+                    <i class="fa-solid ${isSelected ? 'fa-circle-check text-blue-500' : 'fa-grip-vertical text-slate-400 dark:text-slate-500'} mr-2"></i>${item}
                     ${isUsed ? '<i class="fa-solid fa-check ml-2 text-blue-500"></i>' : ''}
+                    ${isSelected ? '<span class="ml-auto text-xs text-blue-500 font-medium">Selected</span>' : ''}
                 </div>`;
             });
             html += '</div>';
             
             // Right column - Drop zones (answers/definitions)
-            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-bullseye mr-2"></i>Answers (Drop here)</h3>';
+            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-bullseye mr-2"></i>Answers (Tap to Match)</h3>';
             data.matchData.rightItems.forEach((answer, idx) => {
                 // Find which left item is matched to this answer
                 const matchedLeftItem = Object.keys(selections).find(key => selections[key] === answer);
@@ -458,7 +464,7 @@
                 const isCorrect = isRevealed && matchedLeftItem && matchedLeftItem === correctLeftItem;
                 const isIncorrect = isRevealed && matchedLeftItem && matchedLeftItem !== correctLeftItem;
                 
-                let dropCls = 'drop-zone p-2 sm:p-3 rounded-lg text-sm sm:text-base flex flex-col gap-1';
+                let dropCls = 'drop-zone p-2 sm:p-3 rounded-lg text-sm sm:text-base flex flex-col gap-1 cursor-pointer transition-all';
                 if (matchedLeftItem) dropCls += ' filled';
                 if (isCorrect) dropCls += ' correct';
                 if (isIncorrect) dropCls += ' incorrect';
@@ -468,10 +474,10 @@
                     ondragover="handleDragOver(event)" 
                     ondragleave="handleDragLeave(event)" 
                     ondrop="handleDrop(event, '${answer.replace(/'/g, "\\'")}')" 
-                    ${matchedLeftItem && !isRevealed ? `onclick="removeMatch('${matchedLeftItem.replace(/'/g, "\\'")}')" title="Click to remove"` : ''}>
+                    onclick="handleDropZoneClick('${answer.replace(/'/g, "\\'")}', ${matchedLeftItem ? "'" + matchedLeftItem.replace(/'/g, "\\'") + "'" : 'null'})">
                     <div class="flex items-center gap-2">
                         <span class="font-semibold ${matchedLeftItem ? (isCorrect ? 'text-green-700 dark:text-green-400' : isIncorrect ? 'text-red-600 dark:text-red-400' : 'text-blue-700 dark:text-blue-400') : 'text-slate-400 dark:text-slate-500 italic'}">
-                            ${matchedLeftItem || 'Drop item here'}
+                            ${matchedLeftItem || (selectedLeftItem ? 'Tap here to match' : 'Select an item first')}
                         </span>
                         ${isCorrect ? '<i class="fa-solid fa-check text-green-600"></i>' : ''}
                         ${isIncorrect ? '<i class="fa-solid fa-xmark text-red-500"></i>' : ''}
@@ -485,7 +491,7 @@
             html += '</div></div>';
             
             // Instructions
-            html += `<p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-4"><i class="fa-solid fa-info-circle mr-1"></i>Drag items from the left and drop them on the matching answers. <span class="hidden sm:inline">Click a filled slot to remove.</span> <span class="sm:hidden">Tap and hold to drag on mobile.</span></p>`;
+            html += `<p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-4"><i class="fa-solid fa-lightbulb mr-1 text-amber-500"></i><strong>Tap mode:</strong> Tap an item to select it, then tap an answer to match. <strong>Drag mode:</strong> Drag items directly to answers. Tap a matched slot to remove.</p>`;
             
             // Show correct pairs if revealed
             if (isRevealed) {
@@ -504,6 +510,9 @@
         // Drag and Drop handlers
         let draggedItem = null;
         let draggedElement = null;
+        
+        // Click-to-select mode for mobile
+        let selectedLeftItem = null;
         
         function handleDragStart(event, leftItem) {
             draggedItem = leftItem;
@@ -567,6 +576,60 @@
             if (matchingSelections[qID] && matchingSelections[qID][leftItem]) {
                 delete matchingSelections[qID][leftItem];
                 renderQuestion();
+            }
+        }
+        
+        // Click-to-select mode functions
+        function selectLeftItem(item) {
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            if (revealState[qID]) return;
+            
+            // Check if item is already used
+            const selections = matchingSelections[qID] || {};
+            if (Object.keys(selections).includes(item)) {
+                // Already matched - deselect
+                selectedLeftItem = null;
+                renderQuestion();
+                return;
+            }
+            
+            // Toggle selection
+            if (selectedLeftItem === item) {
+                selectedLeftItem = null; // Deselect
+            } else {
+                selectedLeftItem = item; // Select
+            }
+            renderQuestion();
+        }
+        
+        function handleDropZoneClick(answer, matchedLeftItem) {
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            if (revealState[qID]) return;
+            
+            // If there's a selected item, make a match
+            if (selectedLeftItem) {
+                if (!matchingSelections[qID]) matchingSelections[qID] = {};
+                
+                // Remove any existing match for this left item
+                if (matchingSelections[qID][selectedLeftItem]) {
+                    delete matchingSelections[qID][selectedLeftItem];
+                }
+                
+                // Remove any existing match for this answer
+                for (let key in matchingSelections[qID]) {
+                    if (matchingSelections[qID][key] === answer) {
+                        delete matchingSelections[qID][key];
+                    }
+                }
+                
+                matchingSelections[qID][selectedLeftItem] = answer;
+                selectedLeftItem = null; // Clear selection
+                renderQuestion();
+            } else if (matchedLeftItem) {
+                // No selection but there's a match - remove it
+                removeMatch(matchedLeftItem);
             }
         }
         
