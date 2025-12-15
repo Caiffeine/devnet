@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevNet Associate Complete Quiz (Modules 5-8)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .option-label { transition: all 0.2s; }
+        .option-input:checked + .option-label { border-color: #2563EB; background-color: #EFF6FF; }
+        .dark .option-input:checked + .option-label { border-color: #3b82f6; background-color: #1e3a5f; }
+        .correct-answer { border-color: #10B981 !important; background-color: #D1FAE5 !important; }
+        .dark .correct-answer { border-color: #10B981 !important; background-color: #064e3b !important; color: #a7f3d0 !important; }
+        .incorrect-answer { border-color: #EF4444 !important; background-color: #FEE2E2 !important; }
+        .dark .incorrect-answer { border-color: #EF4444 !important; background-color: #7f1d1d !important; color: #fecaca !important; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        /* Drag and Drop Styles */
+        .drag-item { transition: all 0.2s; cursor: grab; user-select: none; }
+        .drag-item:active { cursor: grabbing; }
+        .drag-item.dragging { opacity: 0.5; transform: scale(0.95); }
+        .drag-item.used { opacity: 0.4; cursor: not-allowed; background-color: #f1f5f9; }
+        .dark .drag-item.used { background-color: #334155; }
+        .drop-zone { min-height: 44px; transition: all 0.2s; border: 2px dashed #cbd5e1; }
+        .dark .drop-zone { border-color: #475569; }
+        .drop-zone.drag-over { border-color: #2563eb; background-color: #eff6ff; transform: scale(1.02); }
+        .dark .drop-zone.drag-over { background-color: #1e3a5f; }
+        .drop-zone.filled { border-style: solid; border-color: #2563eb; background-color: #eff6ff; cursor: pointer; }
+        .dark .drop-zone.filled { background-color: #1e3a5f; }
+        .drop-zone.correct { border-color: #10B981 !important; background-color: #D1FAE5 !important; }
+        .dark .drop-zone.correct { background-color: #064e3b !important; }
+        .drop-zone.incorrect { border-color: #EF4444 !important; background-color: #FEE2E2 !important; }
+        .dark .drop-zone.incorrect { background-color: #7f1d1d !important; }
+        .match-arrow { color: #64748b; }
+        /* Dark mode toggle animation */
+        .theme-toggle { transition: transform 0.3s ease; }
+        .theme-toggle:hover { transform: rotate(15deg); }
+        /* Mobile improvements */
+        @media (max-width: 640px) {
+            .drag-item, .drop-zone { font-size: 0.875rem; padding: 0.625rem !important; }
+            .drag-item { touch-action: none; }
+        }
+        .drag-item.dragging { opacity: 0.5; transform: scale(0.95); background-color: #dbeafe !important; }
+        .dark .drag-item.dragging { background-color: #1e3a5f !important; }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-20 transition-colors">
+        <div class="max-w-4xl mx-auto px-3 sm:px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3">
+            <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-code-branch text-blue-600 dark:text-blue-400"></i>
+                <span class="hidden xs:inline">DevNet Associate</span>
+                <span class="xs:hidden">DevNet</span>
+                <span class="text-slate-400 dark:text-slate-500 font-normal text-xs sm:text-sm ml-1 hidden md:inline">Modules 5-8 (65 Questions)</span>
+            </h1>
+            <div class="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <select id="module-filter" onchange="filterQuestions()" class="bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 sm:p-2 flex-1 sm:flex-none max-w-[180px] sm:max-w-none">
+                    <option value="all">All Modules (65)</option>
+                    <option value="5">Module 5: Network Fundamentals (19)</option>
+                    <option value="6">Module 6: App Deployment & Security (15)</option>
+                    <option value="7">Module 7: Infrastructure & Automation (16)</option>
+                    <option value="8">Module 8: Cisco Platforms (15)</option>
+                    <option value="final">📝 Final Exam (Mod 5-8 Only)</option>
+                </select>
+                <div class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">
+                    <span id="current-q-num">1</span> / <span id="total-q-num">--</span>
+                </div>
+                <button onclick="toggleDarkMode()" class="theme-toggle p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon text-slate-600 dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-yellow-400 hidden dark:inline"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow p-2 sm:p-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-4 sm:mb-6">
+                <div id="progress-bar" class="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div id="quiz-container" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 relative overflow-hidden min-h-[350px] sm:min-h-[400px] transition-colors"></div>
+            <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 sticky bottom-2 sm:bottom-4 z-10">
+                <button id="prev-btn" onclick="prevQuestion()" class="shadow-md px-4 sm:px-6 py-2.5 sm:py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Previous</span><span class="sm:hidden">Prev</span>
+                </button>
+                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                    <button id="reset-btn" onclick="resetCurrentQuestion()" class="shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-700 dark:text-yellow-400 rounded-lg font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-rotate-right"></i> Reset
+                    </button>
+                    <button id="reveal-btn" onclick="revealAnswer()" class="shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-400 rounded-lg font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-eye"></i> Reveal
+                    </button>
+                </div>
+                <button id="next-btn" onclick="nextQuestion()" class="shadow-md px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base">
+                    Next <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 mt-auto py-4 sm:py-6 transition-colors">
+        <div class="max-w-3xl mx-auto px-4 text-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm">
+            <p>Complete Study Set: DevNet Associate Modules 5, 6, 7, & 8 (65 Questions)</p>
+        </div>
+    </footer>
+
+    <script>
+        const allQuizData = [
+            // ========== MODULE 5: Network Fundamentals (19 Questions) ==========
+            {id:501,module:"5",question:"What command can a technician use on a computer to see if DNS is functioning properly?",options:["ipconfig","net share","nslookup","net use"],correctIndex:2,explanation:"The <strong>nslookup</strong> command is used to query the Domain Name System (DNS) to obtain domain name or IP address mapping."},
+            {id:502,module:"5",question:"Which two OSI model layers have the same functionality as two layers of the TCP/IP model? (Choose two.)",options:["physical","data link","network","transport","session"],correctIndices:[2,3],type:"multi",explanation:"The OSI <strong>transport</strong> layer is functionally equivalent to the TCP/IP transport layer, and the OSI <strong>network</strong> layer is equivalent to the TCP/IP Internet layer."},
+            {id:503,module:"5",question:"What is one advantage of using the cut-through switching method instead of the store-and-forward switching method?",options:["provides the flexibility to support any of Ethernet speeds","has a lower latency appropriate for high-performance computing applications","makes a fast forwarding decision based on the source MAC address of the frame","has a positive impact on bandwidth by dropping most of the invalid frames"],correctIndex:1,explanation:"<strong>Cut-through switching</strong> provides lower latency switching for high-performance computing (HPC) applications."},
+            {id:504,module:"5",question:"Which solution improves web response time by deploying multiple web servers and DNS servers?",options:["memcaching","distributed databases","sharding","load balancing"],correctIndex:3,explanation:"<strong>Load balancing</strong> involves deploying multiple web servers and DNS servers to respond to requests simultaneously."},
+            {id:505,module:"5",question:"What will a host on an Ethernet network do if it receives a frame with a unicast destination MAC address that does not match its own MAC address?",options:["It will remove the frame from the media.","It will forward the frame to the next host.","It will strip off the data-link frame to check the destination IP address.","It will discard the frame."],correctIndex:3,explanation:"If the destination MAC address does not match the device's own MAC address, the NIC <strong>discards the frame</strong>."},
+            {id:506,module:"5",question:"What is the common term given to SNMP log messages that are generated by network devices and sent to the SNMP server?",options:["auditing","warnings","acknowledgments","traps"],correctIndex:3,explanation:"Log messages sent from an SNMP agent to the manager to notify of an event are called <strong>Traps</strong>."},
+            {id:507,module:"5",question:"What is the function of the Nslookup utility?",options:["to manually force a client to send a DHCP request","to display all cached DNS entries on a host","to view the network settings on a host","to manually query the name servers to resolve a given host name"],correctIndex:3,explanation:"<strong>Nslookup</strong> is a command-line utility that is used to send a query to DNS servers to resolve a specific host name to an IP address."},
+            {id:508,module:"5",question:"What type of address is 01-00-5E-0A-00-02?",options:["an address that reaches every host in the network","an address that reaches every host inside a local subnet","an address that reaches a specific group of hosts","an address that reaches one specific host"],correctIndex:2,explanation:"The multicast MAC address begins with <strong>01-00-5E</strong> in hexadecimal. It allows a source device to send a packet to a group of devices."},
+            {id:509,module:"5",question:"Refer to the exhibit. The PC is sending a packet to the Server on the remote network. Router R1 is performing NAT overload. From the perspective of the PC, match the NAT address type with the correct IP address. (Not all options are used.)",image:"images/q509_nat_matching.png",type:"matching",matchData:{leftItems:["Inside Local","Inside Global","Outside Global"],rightItems:["10.130.5.76","192.0.2.1","203.0.113.5","203.0.113.14","192.0.2.2","10.130.5.1"],correctPairs:{"Inside Local":"10.130.5.76","Inside Global":"192.0.2.1","Outside Global":"203.0.113.5"}},explanation:"From the PC's perspective: <strong>Inside Local</strong> = 10.130.5.76 (PC's private IP). <strong>Inside Global</strong> = 192.0.2.1 (R1's S0/0/0 interface - the translated address). <strong>Outside Global</strong> = 203.0.113.5 (server's public IP)."},
+            {id:510,module:"5",question:"Match the OSI layer to the layer number. (Not all options are used.)",type:"matching",matchData:{leftItems:["Layer 1","Layer 2","Layer 3","Layer 4","Layer 5","Layer 6","Layer 7"],rightItems:["Physical Layer","Data Link Layer","Network Layer","Transport Layer","Session Layer","Presentation Layer","Application Layer","Internet Layer","Network Access Layer"],correctPairs:{"Layer 1":"Physical Layer","Layer 2":"Data Link Layer","Layer 3":"Network Layer","Layer 4":"Transport Layer","Layer 5":"Session Layer","Layer 6":"Presentation Layer","Layer 7":"Application Layer"}},explanation:"OSI Model: <strong>Layer 1</strong> = Physical. <strong>Layer 2</strong> = Data Link. <strong>Layer 3</strong> = Network. <strong>Layer 4</strong> = Transport. <strong>Layer 5</strong> = Session. <strong>Layer 6</strong> = Presentation. <strong>Layer 7</strong> = Application. (Internet Layer and Network Access Layer are TCP/IP model layers, not used.)"},
+            {id:511,module:"5",question:"A high school in New York (school A) is using videoconferencing technology to establish student interactions with another high school (school B) in Russia. The network administrator of school A configures the end device with the IP address 209.165.201.10. The response IP for school B is 192.168.25.10. Why will this connection fail?",options:["This is a link-local address.","This is a private IP address.","There is an IP address conflict.","This is a loopback address."],correctIndex:1,explanation:"The IP address 192.168.25.10 is a <strong>private IP address</strong>. This address will not be routed over the Internet."},
+            {id:512,module:"5",question:"Refer to the exhibit. An organization is using static NAT to translate the private IP address of Host A to a single public IP address leased from the ISP. Which address is the inside global address of Host A?",image:"images/q512_static_nat.png",options:["209.165.202.129","203.0.113.2","192.168.2.253","192.168.1.1","192.168.1.10"],correctIndex:0,explanation:"The <strong>Inside Global</strong> address is the public IP that the outside world sees representing Host A. Looking at the NAT router, the .129 address (209.165.202.129) on the NAT interface facing the ISP is the translated public address."},
+            {id:513,module:"5",question:"Consider the following routing table entry for R1: D 10.1.1.0/24 [90/2170112] via 209.165.200.226, 00:00:05, Serial0/0/0. What is the significance of the Serial0/0/0?",options:["It is the interface on the final destination router that is directly connected to the 10.1.1.0/24 network.","It is the R1 interface through which the EIGRP update was learned.","It is the interface on the next-hop router when the destination IP address the 10.1.1.0/24 network.","It is the interface on R1 used to send data that is destined for 10.1.1.0/24."],correctIndex:3,explanation:"The Serial0/0/0 indicates the <strong>outgoing interface on R1</strong> that is used to send packets for the 10.1.1.0/24 destination network."},
+            {id:514,module:"5",question:"A device has an IPv6 address listed as 2001:0DB8:75a3:0214:0607:1234:aa10:ba01. What is the interface ID of the device?",options:["2001:0DB8:75a3","ba01","0607:1234:aa10:ba01","2001:0DB8"],correctIndex:2,explanation:"An IPv6 address comprises 128 bits. The <strong>last four blocks</strong> (64 bits) represent the interface ID: 0607:1234:aa10:ba01."},
+            {id:515,module:"5",question:"In what two situations would UDP be the preferred transport protocol over TCP? (Choose two.)",options:["when applications need to guarantee that a packet arrives intact, in sequence, and unduplicated","when a faster delivery mechanism is needed","when delivery overhead is not an issue","when applications do not need to guarantee delivery of the data","when destination port numbers are dynamic"],correctIndices:[1,3],type:"multi",explanation:"UDP is a stateless protocol used for applications that need speedy (best-effort) delivery, like voice/video, and <strong>do not need to guarantee delivery</strong>."},
+            {id:516,module:"5",question:"Refer to the exhibit. A computer that is configured with the IPv4 address as shown in the exhibit is unable to access the internet. What is the problem?",image:"images/q516_ipv4_config.png",options:["The gateway address is in the wrong subnet.","The IP address is a network address.","The settings were not validated.","The IP address is a broadcast address."],correctIndex:0,explanation:"The exhibit shows: IP: 192.168.44.150, Subnet: 255.255.255.224 (/27), Gateway: 192.168.44.161. The /27 subnet containing .150 has a range of .129-.158. The gateway .161 is in a different subnet (.160-.190 range), so <strong>the gateway is in the wrong subnet</strong>."},
+            {id:517,module:"5",question:"Match the Layer 2 frame field names to the correctly ordered locations for an Ethernet frame. Fields should be ordered from the beginning of the Ethernet frame to the end.",type:"matching",matchData:{leftItems:["First Field","Second Field","Third Field","Fourth Field","Fifth Field","Sixth Field","Seventh Field"],rightItems:["Preamble","SFD","Destination Address","Source Address","EtherType","Data","FCS"],correctPairs:{"First Field":"Preamble","Second Field":"SFD","Third Field":"Destination Address","Fourth Field":"Source Address","Fifth Field":"EtherType","Sixth Field":"Data","Seventh Field":"FCS"}},explanation:"The Ethernet frame fields in order: <strong>1st: Preamble, 2nd: SFD, 3rd: Destination Address, 4th: Source Address, 5th: EtherType, 6th: Data, 7th: FCS</strong>."},
+            {id:518,module:"5",question:"What IPv4-related DNS record type is used by a DNS server in response to a host requesting for a web server address via the URL?",options:["AAAA record","NS record","A record","MX record"],correctIndex:2,explanation:"A DNS server uses an <strong>A record</strong> type for an IPv4 end device address. AAAA is for IPv6."},
+            {id:519,module:"5",question:"In what two situations would UDP be better than TCP as the preferred transport protocol? (Choose two.)",options:["when applications need to guarantee that a packet arrives intact, in sequence, and unduplicated","when a faster delivery mechanism is needed","when delivery overhead is not an issue","when applications do not need to guarantee delivery of the data","when destination port numbers are dynamic"],correctIndices:[1,3],type:"multi",explanation:"UDP is a simple transport protocol that does not guarantee delivery. Used for applications needing <strong>speedy, best-effort delivery</strong>."},
+
+            // ========== MODULE 6: Application Deployment and Security (15 Questions) ==========
+            {id:601,module:"6",question:"Which technique is used to help mitigate SQL injection attacks?",options:["using the same owner or admin account in the web applications to connect to the database","limiting the read access to specific fields of a table or joins of tables","using stored procedures with the 'db_owner' default role","assigning DBA or admin access rights to the application account"],correctIndex:1,explanation:"Mitigation involves <strong>limiting access rights</strong> (least privilege) and <strong>sanitizing/validating inputs</strong>."},
+            {id:602,module:"6",question:"Which security device is used to make responses to client requests look like they all come from the same server?",options:["stateful firewall","forward proxy","reverse proxy","jump box"],correctIndex:2,explanation:"A <strong>Reverse Proxy</strong> sits in front of servers and makes responses look like they come from the same server."},
+            {id:603,module:"6",question:"What is a characteristic of a virtual machine running on a PC?",options:["A virtual machine needs a physical network adapter to connect to the Internet.","A virtual machine runs its own operating system.","The number of virtual machines that can be made available depends on the software resources of the host machine.","A virtual machine is not susceptible to threats and malicious attacks."],correctIndex:1,explanation:"Each virtual machine <strong>runs its own operating system</strong> (Guest OS) on top of the hypervisor."},
+            {id:604,module:"6",question:"What is a characteristic of the blue-green upgrade deployment strategy?",options:["A new environment is created with the new code in it, while the old environment is held in reserve in case users experience problems.","The code changes are periodically rolled out in such a way that they do not impact current users.","The new code is deployed all at once to the old environment.","The new code version is first rolled out to a subset of users."],correctIndex:0,explanation:"<strong>Blue-Green</strong> deployment creates a new environment with new code while keeping old environment in reserve for rollback."},
+            {id:605,module:"6",question:"Match the cloud model to its description. (Not all options are used.)",type:"matching",matchData:{leftItems:["Public","Private","Hybrid","Edge"],rightItems:["These are clouds that locate computing as close as possible to the user.","These clouds are made up of two or more clouds. However, each part remains a distinctive and separate object. Both of these are connected using a single architecture.","These are clouds that are intended for a specific organization or entity, such as the government. They can be set up using the private network of an organization."],correctPairs:{"Edge":"These are clouds that locate computing as close as possible to the user.","Hybrid":"These clouds are made up of two or more clouds. However, each part remains a distinctive and separate object. Both of these are connected using a single architecture.","Private":"These are clouds that are intended for a specific organization or entity, such as the government. They can be set up using the private network of an organization."}},explanation:"<strong>Edge</strong>: Computing close to user. <strong>Hybrid</strong>: Two or more clouds connected. <strong>Private</strong>: For specific organization. (Public is not used.)"},
+            {id:606,module:"6",question:"Which mitigation method is effective against cross-site scripting?",options:["requiring multifactor authentication","consistent hardening of systems and applications","sanitizing untrusted content","using only necessary features and secure packages downloaded from official sources and verified with a signature"],correctIndex:2,explanation:"<strong>Sanitizing untrusted content</strong> prevents the browser from interpreting user input as executable script code."},
+            {id:607,module:"6",question:"Match the environments in the four-tier development environment structure to the description.",type:"matching",matchData:{leftItems:["Development","Testing","Staging","Production"],rightItems:["Where coding takes place","Includes automated tools such as Jenkins, CircleCI, or Travis CI, and is often integrated with a version control system","Structurally as close to the actual production environment as possible","Contains code that has been tested multiple times and is error free"],correctPairs:{"Development":"Where coding takes place","Testing":"Includes automated tools such as Jenkins, CircleCI, or Travis CI, and is often integrated with a version control system","Staging":"Structurally as close to the actual production environment as possible","Production":"Contains code that has been tested multiple times and is error free"}},explanation:"Four-tier: <strong>Development</strong> (coding) → <strong>Testing</strong> (automated tools) → <strong>Staging</strong> (mirror of production) → <strong>Production</strong> (error-free code)."},
+            {id:608,module:"6",question:"Which attack involves the insertion of malicious code into SQL statements?",options:["SQL injection","cross-site scripting","brute force","local file inclusion"],correctIndex:0,explanation:"<strong>SQL injection</strong> occurs when malicious SQL statements are inserted into entry fields for execution."},
+            {id:609,module:"6",question:"In software development, what is the purpose of a jump box?",options:["to act as a single trusted machine used to launch connections to sensitive systems","to make all requests originating from within a network look like they come from the same source IP address","to filter packets based on Layer 3 and Layer 4 addressing","to receive incoming requests and forward them to multiple servers"],correctIndex:0,explanation:"A <strong>Jump Box</strong> is a hardened server used as a single point of entry to access and manage devices in a secure zone."},
+            {id:610,module:"6",question:"Which characters are used to separate batched SQL statements?",options:["semicolons ;","colons :","parentheses ()","pound signs #"],correctIndex:0,explanation:"The <strong>semicolon (;)</strong> is the standard character to terminate and separate SQL statements."},
+            {id:611,module:"6",question:"What is a philosophy for software deployment used in the field of DevOps?",options:["OWASP","DevNet","SOAP","CI/CD"],correctIndex:3,explanation:"<strong>CI/CD</strong> (Continuous Integration/Continuous Delivery) is a core DevOps philosophy."},
+            {id:612,module:"6",question:"Which statement is a characteristic of the broken access control threat to web applications?",options:["It allows attackers to access, and potentially change, serialized versions of data and objects.","It allows an attacker to use the dynamic functions of a site to inject malicious content into the page.","It allows users to circumvent existing authentication requirements.","It allows attackers to steal sensitive information such as passwords or personal information."],correctIndex:2,explanation:"<strong>Broken access control</strong> occurs when developers build applications that enable users to circumvent existing authentication requirements."},
+            {id:613,module:"6",question:"Which technology is used to containerize applications and allows them to run in a variety of environments?",options:["Docker","GitHub","VirtualBox","Cisco DNA"],correctIndex:0,explanation:"<strong>Docker</strong> is the leading platform for containerization, allowing apps to run in any environment."},
+            {id:614,module:"6",question:"Match the OWASP resource with a description.",type:"matching",matchData:{leftItems:["Dependency Check","ModSecurity Core Rule Set","Cheat Sheet Series","DefectDojo"],rightItems:["Looks for known vulnerabilities in code","Generic attack detection rules used with web application firewalls","Explains ways to mitigate command security issues in web applications","Streamlines the code testing process"],correctPairs:{"Dependency Check":"Looks for known vulnerabilities in code","ModSecurity Core Rule Set":"Generic attack detection rules used with web application firewalls","Cheat Sheet Series":"Explains ways to mitigate command security issues in web applications","DefectDojo":"Streamlines the code testing process"}},explanation:"<strong>Dependency Check</strong>: Finds vulnerabilities. <strong>ModSecurity</strong>: WAF rules. <strong>Cheat Sheet Series</strong>: Security mitigation guides. <strong>DefectDojo</strong>: Testing process management."},
+            {id:615,module:"6",question:"What is used to isolate the different parts of a running container?",options:["wrappers","namespaces","control groups","union file systems"],correctIndex:1,explanation:"Containers use <strong>namespaces</strong> to provide isolation for processes, networking, and other system resources."},
+
+            // ========== MODULE 7: Infrastructure and Automation (16 Questions) ==========
+            {id:701,module:"7",question:"What is the most common cause of IT outages?",options:["a threat actor targeting the enterprise equipment","an experienced engineer implementing a configuration using automation","an engineer misconfiguring a device or network with manual changes","an experienced engineer using an open source product"],correctIndex:2,explanation:"Most outages are caused by <strong>human error</strong> when engineers manually misconfigure devices or networks."},
+            {id:702,module:"7",question:"What is an unopinionated component in a software ecosystem?",options:["a component that does not show an increased preference for specific companion components or architectures unless those components or architectures are necessary","a component that is classified as open source and does not require the implementation of specific vendor products","a component that may function in a limited ability in order to compensate for the selection of companion components or architectures","a component that requires a specific companion component in order to provide full stack implementation"],correctIndex:0,explanation:"Unopinionated software gives the developer <strong>freedom of choice</strong> regarding architecture and tools."},
+            {id:703,module:"7",question:"In the use of container technologies, what is a function of platform abstraction when considering the deployment of a product in a cloud environment?",options:["Traditional complementary software components such as a database server and web server would be implemented as a single containerized application.","Applications require re-engineering in order to implement scalability and consolidation.","A containerized app can run on a generically-specified host environment.","Applications are aware of underlying hardware configurations and are customized to provide increased functionality."],correctIndex:2,explanation:"Platform abstraction allows containerized apps to run on a <strong>generic host environment</strong> without worrying about hardware."},
+            {id:704,module:"7",question:"A student is setting up VMs in VirtualBox. The student starts both VMs and tries to verify communications by entering https://192.168.56.101 in a browser. An error message displays 'The connection has timed out'. How can the student verify the IP address assigned by DHCP to the CSR1000v virtual router?",options:["Issue the ping 192.168.56.101 command on the local computer.","Issue the show ip interface brief command in the CSR1000v VM.","Issue the show running-config command in the CSR1000v VM.","Issue the ifconfig command in the CSR1000v VM."],correctIndex:1,explanation:"The command <strong>show ip interface brief</strong> can be used to verify the actual IP address assigned to the interface."},
+            {id:705,module:"7",question:"What is the historical correlation between software developers and IT operations?",options:["Developers had the job of creating applications. Operations had the job of verifying that these applications work for users.","Operations had the job of brainstorming applications. Developers had the job of testing that these applications work for users and the business.","Operations had the job of testing applications. Developers had the job of implementing these applications for clients.","Developers had the job of testing applications. Operations had the job of implementing these applications for clients."],correctIndex:0,explanation:"Historically, developers created applications while IT operations ensured they <strong>work for users and the business</strong>."},
+            {id:706,module:"7",question:"How is an error budget calculated in the DevOps/SRE culture?",options:["An error budget is the difference between the SLO and the SLI.","An error budget is the difference between the SLO and 100% availability.","An error budget is the difference between the SLO and the SLA.","An error budget is the difference between the SLA and 100% availability."],correctIndex:1,explanation:"The error budget is the amount of unreliability allowed. It is <strong>100% minus the SLO</strong>."},
+            {id:707,module:"7",question:"In reviewing a formalized agreement, what is the purpose of an SLI (Service Level Indicator)?",options:["An SLI is a specific set of steps for slowing releases as errors occur.","An SLI is an easy to complete, external agreement that is set between the organization and the customer.","An SLI is a benchmark metric used to determine and describe SLOs.","An SLI is an agreed-upon number of errors per unit time."],correctIndex:2,explanation:"A <strong>Service Level Indicator (SLI)</strong> is a real-world benchmark metric used to determine Service-Level Objectives (SLOs)."},
+            {id:708,module:"7",question:"What is the default shell commonly used on macOS and Linux?",options:["Bash","csh","tcsh","Bourne"],correctIndex:0,explanation:"<strong>Bash</strong> (Bourne Again Shell) is the default shell for most Linux distributions and was the default for macOS."},
+            {id:709,module:"7",question:"Which type of automation includes scripting that may be dangerous if the starting state is not completely known and controlled?",options:["stateful","stateless","declarative","procedural"],correctIndex:3,explanation:"<strong>Procedural</strong> automation executes steps blindly. If the system isn't in the expected state, the script may break things."},
+            {id:710,module:"7",question:"What is an imperative procedure?",options:["An ordered sequence of commands that is used to reach a specific end state.","A set of commands that require administrator privileges and can only be executed on a local system.","A set of commands that is piped to a remote host and immediately executed.","A set of commands that examines a target and only performs the tasks needed to achieve the desired state."],correctIndex:0,explanation:"Imperative programming defines <strong>how</strong> to achieve a result via an ordered sequence of commands."},
+            {id:711,module:"7",question:"Which statement describes the declarative static model?",options:["A declarative model will examine present circumstances and bring real infrastructure into alignment in order to reach a desired state.","A declarative model will execute code that is sequentially task-driven instead of focusing on deployment-specific details.","A declarative model will follow a specific order of sequential steps in order to effect changes on a target system.","A declarative model will subdivide code into top-down sections and condition-driven handlers."],correctIndex:0,explanation:"Declarative models define <strong>what</strong> the end state should be, and the system figures out how to align current state to that desire."},
+            {id:712,module:"7",question:"Refer to the exhibit. A user is working on Ansible on the local NMS to manage remote network devices. The user issues the 'ansible webservers -m ping' command. However, an error message returns. What are two possible causes for the error? (Choose two.)",image:"images/q712_ansible_error.png",options:["The SSH credential is wrong.","The destination host IP address is wrong.","The switch -m should be -M","The SSH client is not installed.","The destination host alias is wrong.","The SSH service does not start on the host."],correctIndices:[1,5],type:"multi",explanation:"The error indicates the SSH server on the destination host cannot be reached. Possible issues: <strong>IP address is wrong</strong> or <strong>SSH service is not running</strong>."},
+            {id:713,module:"7",question:"Which component in the pyATS ecology handles bundling and running jobs?",options:["EasyPy","AEtest","Genie","Clover"],correctIndex:0,explanation:"<strong>EasyPy</strong> is the runtime engine that can take one or more pyATS scripts and compile them into a job and run them together as a batch."},
+            {id:714,module:"7",question:"An engineer has just created a backup file of a Cisco VIRL network simulation. Which command should be used to compare the most recent .virl file with the previous backup file?",options:["diff","pyats","knife","source","list"],correctIndex:0,explanation:"The standard <strong>diff</strong> command is used to compare contents of two files."},
+            {id:715,module:"7",question:"While working in the Ansible code structure, which type of file contains a sequence of tasks, executed in top-down order?",options:[".virl",".yml",".py",".txt"],correctIndex:1,explanation:"Ansible playbooks are written in <strong>YAML (.yml)</strong>."},
+            {id:716,module:"7",question:"What is a standard command to create a Python virtual environment?",options:["sudo apt-get install python3-pip","pip install [options] [package-index-options]…","python3 -m venv /path/to/new/virtual/environment","source bin/activate"],correctIndex:2,explanation:"The <strong>venv</strong> command is used to create lightweight virtual environments: python3 -m venv /path/to/env."},
+
+            // ========== MODULE 8: Cisco Platforms and Development (15 Questions) ==========
+            {id:801,module:"8",question:"Which underlying technology makes it possible for Cisco Umbrella to prevent a user from accessing a blocked site?",options:["DNS","HTTP and HTTPS","Cisco Firewall","DHCP"],correctIndex:0,explanation:"Cisco Umbrella uses <strong>DNS</strong> to block access to malicious domains, URLs, IPs, and files before a connection is established."},
+            {id:802,module:"8",question:"Which language is used by the NETCONF protocol to encode both the configuration data and protocol messages?",options:["XML","YAML","HTML","JSON"],correctIndex:0,explanation:"NETCONF uses <strong>XML</strong> for data encoding."},
+            {id:803,module:"8",question:"What are the three main capabilities provided by Cisco AMP? (Choose three.)",options:["annihilation","detection","responses and automation","redirection","relaying","prevention"],correctIndices:[1,2,5],type:"multi",explanation:"Cisco AMP provides <strong>Prevention, Detection, and Responses/Automation</strong>."},
+            {id:804,module:"8",question:"Which three functions are provided by Cisco Finesse REST APIs? (Choose three.)",options:["They can be used to integrate into existing applications to add contact center functionality.","They can be used to get termination call detail (TCD) reports.","They can be used to get the call history of an agent.","They can be used to build a fully functioning agent desktop.","They can be used to build custom OpenSocial gadgets.","They can be used to build a script to automate tasks."],correctIndices:[0,3,5],type:"multi",explanation:"Finesse REST APIs can build a <strong>fully functioning agent desktop</strong>, <strong>integrate into existing apps</strong>, and <strong>automate tasks</strong>."},
+            {id:805,module:"8",question:"Which two benefits are provided by the Python-based Webex Teams SDK? (Choose two.)",options:["It integrates with the Webex Devices API.","It provides error reporting.","It provides access to more API calls within Webex Teams.","It manages requests with pagination.","It is better supported than the Webex Teams APIs."],correctIndices:[1,3],type:"multi",explanation:"The SDK provides <strong>error reporting</strong> and <strong>manages pagination</strong> automatically."},
+            {id:806,module:"8",question:"Refer to the exhibit. Which data format is used to describe the list of interfaces?",image:"images/q806_yang_format.png",options:["JSON","YANG","XML","YAML"],correctIndex:1,explanation:"<strong>YANG</strong> models use a tree structure. The format shown is the YANG tree/module structure."},
+            {id:807,module:"8",question:"Which two statements describe the usage of Cisco Finesse JavaScript APIs? (Choose two.)",options:["They can be used to get the call history of an agent.","They can be used to build custom gadgets to be placed into applications other than Finesse.","They can be used to embed existing web pages into a custom gadget.","They can be used to build a custom gadget for the agent state workflow.","They can be used to build a fully functioning agent desktop."],correctIndices:[2,3],type:"multi",explanation:"Finesse JavaScript APIs can <strong>embed existing web pages</strong> into gadgets and <strong>build custom agent state workflow gadgets</strong>."},
+            {id:808,module:"8",question:"Why does the Meraki dashboard API return a 404 rather than a 403 code in response to a request with an invalid API key?",options:["The 404 return code determines whether unauthorized users will try again.","The 403 return code would indicate that the client definitely has an invalid API key.","The 404 return code prevents the system from indicating the existence of resources to unauthorized users.","The 403 return code would indicate that there are no resources at that endpoint but the API key could be correct."],correctIndex:2,explanation:"Returning <strong>404</strong> instead of 403 prevents attackers from knowing if a resource exists at that endpoint."},
+            {id:809,module:"8",question:"What does Cisco ISE do when it identifies a user or device accessing the network?",options:["It logs the access attempt.","It automatically and securely places the device and user into the right part of the network.","It processes the originating IP address according to a whitelist.","It quarantines the device and user until an administrator releases the quarantine."],correctIndex:1,explanation:"Cisco ISE identifies devices and <strong>securely places them into the correct network segment</strong> based on policy."},
+            {id:810,module:"8",question:"How are service profiles used by Cisco UCS Manager?",options:["Cisco UCS Manager uses an assigned service profile to each instance to define network policy.","Cisco UCS Manager uses service profiles to assign a unique identity to the server associated with each profile.","Cisco UCS Manager saves service profiles to recover servers in case of data loss.","Cisco UCS Manager uses service profiles as templates to provision policies to multiple versions of the same server."],correctIndex:1,explanation:"Service profiles <strong>assign a unique identity</strong> (UUID, MAC, WWN) to a server."},
+            {id:811,module:"8",question:"Which function does the AXL interface provide for users?",options:["provisions and manages objects in the Unified Communication Management Administration Console","looks up the top ten OWASP vulnerabilities and identifies which endpoints are vulnerable","updates network device configurations with a rollback mechanism","provisions Webex Devices and customizes each display"],correctIndex:0,explanation:"AXL is used to <strong>provision and manage objects</strong> in the Cisco Unified Communications Manager database."},
+            {id:812,module:"8",question:"What are three primary YANG sources in Cisco NSO? (Choose three.)",options:["mapping model","data models from devices","NSO data model","configuration models","communication model","YANG service models"],correctIndices:[1,2,5],type:"multi",explanation:"NSO uses <strong>NSO data model</strong>, <strong>Device data models</strong> (NEDs), and <strong>YANG service models</strong>."},
+            {id:813,module:"8",question:"What are two tasks a network administrator can perform with Cisco UCS Director? (Choose two.)",options:["Manage multiple Cisco UCS Manager appliances.","Deploy and add capacity to converged infrastructures in a consistent and repeatable manner.","Load-balance data traffic.","Create, clone, and deploy service profiles and templates for all Cisco UCS servers and compute applications.","Create a direct line of communication between Cisco and non-Cisco components."],correctIndices:[1,3],type:"multi",explanation:"UCS Director can <strong>deploy/add capacity consistently</strong> and <strong>create/clone/deploy service profiles</strong>."},
+            {id:814,module:"8",question:"What are two actions taken by Firepower for traffic control? (Choose two.)",options:["using security intelligence data to filter traffic, including IP addresses, address blocks, domain names, and URLs","controlling which websites are available to the users on the network","shutting down the network in the event of a DDOS attack","directing heavy data traffic to free servers","load balancing during high-traffic time periods"],correctIndices:[0,1],type:"multi",explanation:"Firepower uses <strong>security intelligence to filter traffic</strong> and <strong>controls which websites are available</strong>."},
+            {id:815,module:"8",question:"What are two types of YANG models? (Choose two.)",options:["native model","vendor model","private model","hybrid model","open model"],correctIndices:[0,4],type:"multi",explanation:"Two types: <strong>Native</strong> (vendor-specific like Cisco) and <strong>Open</strong> (standardized like IETF, OpenConfig)."}
+        ];
+        
+        // ========== FINAL EXAM QUESTIONS (Modules 5-8 Only) ==========
+        const finalExamData = [
+            // Module 5: Network Fundamentals
+            {id:901,module:"5",question:"Data is being sent from a source PC to a destination server. Which three statements correctly describe the function of TCP or UDP? (Choose three.)",options:["The TCP process running on the PC randomly selects the destination port when establishing a session with the server.","UDP segments are encapsulated within IP packets for transport across the network.","The TCP source port number identifies the sending host on the network.","The UDP destination port number identifies the application or service on the server which will handle the data.","The source port field identifies the running application or service that will handle data returning to the PC.","TCP is the preferred protocol when a function requires lower network overhead."],correctIndices:[1,3,4],type:"multi",explanation:"Layer 4 port numbers identify the application or service. <strong>UDP segments are encapsulated in IP packets</strong>, <strong>destination port identifies the service</strong>, and <strong>source port handles return data</strong>."},
+            {id:902,module:"5",question:"Which command can be used on Linux and MAC hosts to get IP addressing information?",options:["ipconfig","ip address","ifconfig","networksetup -getinfo"],correctIndex:2,explanation:"<strong>ifconfig</strong> is used on Linux and Mac hosts. ipconfig is for Windows."},
+            {id:903,module:"5",question:"What are two reasons a network administrator would segment a network with a Layer 2 switch? (Choose two.)",options:["to create fewer collision domains","to create more broadcast domains","to enhance user bandwidth","to isolate ARP request messages from the rest of the network","to eliminate virtual circuits","to isolate traffic between segments"],correctIndices:[2,5],type:"multi",explanation:"Switches <strong>enhance user bandwidth</strong> by creating temporary point-to-point connections and <strong>isolate traffic between segments</strong>."},
+            {id:904,module:"5",question:"A network contains multiple VLANs spanning multiple switches. What happens when a device in VLAN 20 sends a broadcast Ethernet frame?",options:["Devices in VLAN 20 and the management VLAN see the frame.","All devices in all VLANs see the frame.","Only devices that are connected to the local switch see the frame.","Only devices in VLAN 20 see the frame."],correctIndex:3,explanation:"<strong>VLANs create logical broadcast domains</strong>. Broadcasts only reach devices in the same VLAN."},
+            {id:905,module:"5",question:"How is an Ethernet MAC address constructed?",options:["The first 3 bytes represent the network, and the last 3 bytes uniquely identify the host.","The first 3 bytes represent the vendor OUI, and the last 3 bytes are assigned uniquely by the vendor.","The first 3 bytes are uniquely assigned by IANA, and the last 3 bytes represent the serial number.","The first 3 bytes represent the vendor OUI, and the last 3 bytes are assigned randomly by the OS."],correctIndex:1,explanation:"MAC: <strong>First 3 bytes = OUI (vendor)</strong>, <strong>Last 3 bytes = unique assignment by vendor</strong>."},
+            {id:906,module:"5",question:"A packet is received by a server. The packet has a destination port number of 443. What protocol or service is requested?",options:["HTTP","NTP","DHCP","HTTPS"],correctIndex:3,explanation:"Port 443 = <strong>HTTPS</strong> (HTTP Secure)."},
+            {id:907,module:"5",question:"When thinking about the functional planes of a network, what is unique about the data plane?",options:["It includes protocols used to remotely access network devices.","It includes the SSH protocol.","It manipulates data and outputs it in the XML format.","It forwards data through a network infrastructure device."],correctIndex:3,explanation:"The <strong>data plane forwards packets</strong> through the network infrastructure in hardware."},
+            {id:908,module:"5",question:"A packet is received by a server. The packet has a destination port number of 53. What protocol or service is requested?",options:["DNS","NetBIOS","POP3","IMAP"],correctIndex:0,explanation:"Port 53 = <strong>DNS</strong> (Domain Name System)."},
+            {id:909,module:"5",question:"Which statement accurately describes dynamic NAT?",options:["It always maps a private IP address to a public IP address.","It provides an automated mapping of inside local to inside global IP addresses.","It provides a mapping of internal host names to IP addresses.","It dynamically provides IP addressing to internal hosts."],correctIndex:1,explanation:"<strong>Dynamic NAT</strong> provides automated mapping of inside local to inside global IP addresses."},
+            {id:910,module:"5",question:"A network administrator can successfully ping the server at www.cisco.com, but cannot ping the company web server at an ISP. Which tool would help identify where the packet was lost?",options:["traceroute","ipconfig","telnet","netstat"],correctIndex:0,explanation:"<strong>traceroute</strong> shows the path packets take and identifies where delays or losses occur."},
+            
+            // Module 6: Application Deployment & Security
+            {id:911,module:"6",question:"A pharmaceutical company wants to contract cloud services with strict access security for employee data. Which type of cloud would be most appropriate?",options:["community cloud","public cloud","hybrid cloud","private cloud"],correctIndex:3,explanation:"<strong>Private cloud</strong> offers strict access security for sensitive organizational data."},
+            {id:912,module:"6",question:"What type of attack targets an SQL database using the input field of a user?",options:["buffer overflow","SQL injection","Cross site scripting","XML injection"],correctIndex:1,explanation:"<strong>SQL injection</strong> inserts malicious SQL statements through user input fields."},
+            {id:913,module:"6",question:"Which tool might a developer use as part of a Continuous Integration pipeline to build and test source code?",options:["SQL","REST","Docker","Jenkins"],correctIndex:3,explanation:"<strong>Jenkins</strong>, CircleCI, and Travis CI are automated testing tools for CI/CD pipelines."},
+            {id:914,module:"6",question:"Which piece of software creates and manages virtual machines, allocating system resources as needed?",options:["supervisor","hypervisor","host operating system","hosted operating system"],correctIndex:1,explanation:"<strong>Hypervisor</strong> creates and manages VMs and allocates resources to each."},
+            {id:915,module:"6",question:"A network engineer is creating a Docker container. If no tag is specified, which tag will be used by default?",options:["tag","latest","(a blank space)","default"],correctIndex:1,explanation:"If no tag is specified, Docker uses <strong>latest</strong> by default."},
+            {id:916,module:"6",question:"What is immutable infrastructure in DevOps?",options:["infrastructure deployed with versions locked except for manual changes","infrastructure only deployed in containers","infrastructure entirely maintained in code and never manually changed","virtualized infrastructure deployed as golden images"],correctIndex:2,explanation:"<strong>Immutable infrastructure</strong> is entirely maintained through code and never subjected to manual changes."},
+            {id:917,module:"6",question:"What is the most common cause of IT outages?",options:["an engineer misconfiguring a device with manual changes","an experienced engineer using an open source product","an experienced engineer implementing automation","a threat actor targeting enterprise equipment"],correctIndex:0,explanation:"Most outages are caused by <strong>manual misconfiguration due to human error</strong>."},
+            {id:918,module:"6",question:"Which Docker component defines the steps needed to create an image?",options:["UnionFS","Dockerfile","cross-site script","namespaces"],correctIndex:1,explanation:"<strong>Dockerfile</strong> defines the steps to build a Docker image."},
+            {id:919,module:"6",question:"Which three statements describe characteristics of a virtual machine? (Choose three.)",options:["It is created using the Docker format.","It includes a guest operating system.","It runs on top of a hypervisor.","It shares the OS of the host.","It is self-contained with emulated storage, memory, and network.","It requires Windows as host OS."],correctIndices:[1,2,4],type:"multi",explanation:"VMs <strong>include a guest OS</strong>, <strong>run on a hypervisor</strong>, and are <strong>self-contained</strong>."},
+            {id:920,module:"6",question:"What are two characteristics of the staging environment? (Choose two.)",options:["Code has been tested multiple times and is error free.","It is structured as close as possible to production.","It is where code undergoes final acceptance testing.","It is where end users will interact with the code.","It often includes automated testing tools like Jenkins."],correctIndices:[1,2],type:"multi",explanation:"Staging is <strong>close to production</strong> and where <strong>final acceptance testing</strong> occurs."},
+            {id:921,module:"6",question:"Which technique makes the output of password hashing nondeterministic?",options:["password length and complexity","multifactor authentication","password salting","password strength validation tools"],correctIndex:2,explanation:"<strong>Password salting</strong> adds random data to make hashes nondeterministic."},
+            {id:922,module:"6",question:"Which SQL injection defense should be used only as a last resort?",options:["escaping all user-supplied input","using a database firewall","implementing whitelist input validation","using parameterized queries"],correctIndex:0,explanation:"<strong>Escaping all user-supplied input</strong> is a last resort; parameterized queries are preferred."},
+            
+            // Module 7: Infrastructure & Automation
+            {id:923,module:"7",question:"What is a function of a read-only automation solution?",options:["reduce risk by implementing security policies via automated changes","use GET and SET requests to retrieve and send data","audit configurations and manually deploy changes for compliance","implement infrastructure that receives config from a centralized server"],correctIndex:2,explanation:"Read-only automation can <strong>audit configurations</strong> and do the next natural step to put config back into compliance."},
+            {id:924,module:"7",question:"In Ansible, which file contains device information used by playbooks?",options:["service","playbook","variable","hosts"],correctIndex:3,explanation:"<strong>hosts</strong> is the inventory file containing device information for Ansible playbooks."},
+            {id:925,module:"7",question:"Which component in the pyATS ecology handles bundling and running jobs?",options:["AEtest","Clover","Genie","EasyPy"],correctIndex:3,explanation:"<strong>EasyPy</strong> is the runtime engine that bundles and runs pyATS jobs."},
+            {id:926,module:"7",question:"Which string identifies the beginning of a new document in a YAML file with multiple documents?",options:["three slashes ///","three dots ...","three pound signs ###","three dashes ---"],correctIndex:3,explanation:"<strong>Three dashes (---)</strong> separate documents in YAML files."},
+            {id:927,module:"7",question:"What is the difference between functions and methods in Python?",options:["Functions use global variables; methods use only local variables.","Functions are called by referencing object; methods are called by names.","Functions can pass arguments; methods can only pass keywords.","Functions are standalone; methods are associated with an object."],correctIndex:3,explanation:"<strong>Functions are standalone</strong>; <strong>methods are associated with an object</strong> (OOP)."},
+            {id:928,module:"7",question:"Which command is used to create a new Git repository?",options:["git init","git add","git commit","git clone"],correctIndex:0,explanation:"<strong>git init</strong> initializes a new Git repository."},
+            {id:929,module:"7",question:"What character separates key and value pairs in YAML?",options:["colon :","semi colon ;","underscore _","forward slash /"],correctIndex:0,explanation:"<strong>Colon (:)</strong> separates keys from values in YAML."},
+            {id:930,module:"7",question:"Which git command compares changes between files?",options:["git diff","git merge","git checkout","git status"],correctIndex:0,explanation:"<strong>git diff</strong> shows differences between files or commits."},
+            {id:931,module:"7",question:"What does orchestration refer to in IT automation?",options:["Managing workload lifecycles and reacting to changing conditions","Preparing a server through installation of libraries","Building and arranging multi-component applications","Obtaining compute, storage, and network infrastructure"],correctIndex:0,explanation:"Orchestration <strong>manages workload lifecycles</strong> and reacts dynamically to conditions (e.g., autoscaling)."},
+            {id:932,module:"7",question:"Which communication protocol does Ansible use to connect to remote devices?",options:["Telnet over VPN","HTTPS","Secure FTP","SSH"],correctIndex:3,explanation:"Ansible uses <strong>SSH</strong> to communicate with remote machines."},
+            {id:933,module:"7",question:"A developer issues 'python3 -m venv devenv'. What is the developer trying to achieve?",options:["install devnet tools in the venv named Python 3","create a Python 3 virtual environment named devenv","activate the Python 3 virtual environment named devenv","enter the Python 3 venv named venv using devnet tools"],correctIndex:1,explanation:"<strong>python3 -m venv devenv</strong> creates a virtual environment named devenv."},
+            
+            // Module 8: Cisco Platforms
+            {id:934,module:"8",question:"A packet has destination port 8008. What protocol or service is requested?",options:["Telnet over SSH","RESTCONF","HTTP","NETCONF"],correctIndex:2,explanation:"Port 8008 is commonly used for <strong>HTTP</strong> (alternate HTTP port)."},
+            {id:935,module:"8",question:"Which Cisco SDK works with ACI?",options:["Cobra","IMC","UCS","Instant Connect"],correctIndex:0,explanation:"<strong>Cobra</strong> is the Python SDK for Cisco ACI."},
+            {id:936,module:"8",question:"Which two data formats can RESTCONF use? (Choose two.)",options:["JSON","XML","YAML","YANG","HTML"],correctIndices:[0,1],type:"multi",explanation:"RESTCONF can use <strong>JSON</strong> or <strong>XML</strong> for data encoding."},
+            {id:937,module:"8",question:"Which library is most commonly used for Python NETCONF clients?",options:["posix","pyclient","ncclient","pypi"],correctIndex:2,explanation:"<strong>ncclient</strong> is the most common Python library for NETCONF."},
+            {id:938,module:"8",question:"Which two Meraki APIs allow device provisioning and real-time notifications? (Choose two.)",options:["Webhook API","Investigation API","Dashboard API","Enforcement API","Reporting API"],correctIndices:[0,2],type:"multi",explanation:"<strong>Dashboard API</strong> for provisioning/management, <strong>Webhook API</strong> for real-time notifications."},
+            {id:939,module:"8",question:"A packet has destination port 830. What protocol or service is requested?",options:["NTP","DHCP","NETCONF","HTTPS"],correctIndex:2,explanation:"Port 830 = <strong>NETCONF</strong> (default port using SSH transport)."},
+            {id:940,module:"8",question:"Which programming language is supported by Webex xAPI for macros?",options:["Java","Python","JavaScript","C++"],correctIndex:2,explanation:"<strong>JavaScript</strong> is used to develop macros for Webex devices."},
+            {id:941,module:"8",question:"Which Cisco management system is designed for SDN and runs on Nexus 9000 hardware?",options:["Application Centric Infrastructure (ACI)","IOS XE","Nexus Operating System (NX-OS)","DNA Center"],correctIndex:0,explanation:"<strong>ACI</strong> is Cisco's SDN solution running on Nexus 9000."},
+            {id:942,module:"8",question:"What is an architectural constraint of a true RESTful API?",options:["It must support XML-RPC and JSON-RPC.","It allows resource caching.","It should be behind a firewall.","It operates as a cloud service."],correctIndex:1,explanation:"REST constraints include Client/Server, Stateless, <strong>Cache</strong>, Uniform interface, Layered system, Code on demand."},
+            {id:943,module:"8",question:"Which Cisco product provides a rule-based engine for policy-based network access?",options:["Identity Services Engine","Umbrella","Threat Grid","Advanced Malware Protection"],correctIndex:0,explanation:"<strong>ISE</strong> provides policy-based network access through a rule-based engine."},
+            {id:944,module:"8",question:"When thinking about the functional planes, what is unique about the management plane?",options:["It forwards data based on STP settings.","It is responsible for switching packets in hardware.","It includes protocols used to monitor network devices.","It includes protocols between network devices like routers."],correctIndex:2,explanation:"<strong>Management plane</strong> manages traffic destined for the device itself (SSH, SNMP)."}
+        ];
+
+        let filteredQuizData = [...allQuizData];
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let revealState = {};
+        let matchingSelections = {};
+
+        const container = document.getElementById('quiz-container');
+        const progressBar = document.getElementById('progress-bar');
+        const currentQNum = document.getElementById('current-q-num');
+        const totalQNum = document.getElementById('total-q-num');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const revealBtn = document.getElementById('reveal-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        function filterQuestions() {
+            const filterValue = document.getElementById('module-filter').value;
+            if (filterValue === 'all') {
+                filteredQuizData = [...allQuizData];
+            } else if (filterValue === 'final') {
+                // Load final exam questions (separate from module questions)
+                filteredQuizData = [...finalExamData];
+            } else {
+                filteredQuizData = allQuizData.filter(q => q.module === filterValue);
+            }
+            currentQuestionIndex = 0;
+            initQuiz();
+        }
+
+        function initQuiz() {
+            totalQNum.textContent = filteredQuizData.length;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (filteredQuizData.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 py-10">No questions found for this selection.</div>`;
+                return;
+            }
+
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            currentQNum.textContent = currentQuestionIndex + 1;
+            
+            const progress = ((currentQuestionIndex + 1) / filteredQuizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            let contentHtml = '';
+
+            // Handle different question types
+            if (data.type === 'matching') {
+                contentHtml = renderMatchingQuestion(data, qID);
+            } else if (data.type === 'multi') {
+                contentHtml = renderMultiChoiceQuestion(data, qID);
+            } else {
+                contentHtml = renderSingleChoiceQuestion(data, qID);
+            }
+
+            // Image/exhibit
+            let exhibitHtml = '';
+            if (data.image) {
+                exhibitHtml += `<div class="mb-4"><img src="${data.image}" class="max-w-full h-auto rounded-lg border border-slate-200 dark:border-slate-600 mx-auto" alt="Question Exhibit" onerror="this.style.display='none';"></div>`;
+            }
+            if (data.exhibit) {
+                exhibitHtml += `<div class="mb-6 p-4 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap"><div class="font-bold text-slate-400 dark:text-slate-500 text-xs uppercase mb-1">Exhibit / Scenario</div>${data.exhibit}</div>`;
+            }
+
+            const explanationHtml = revealState[qID] ? `<div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 text-slate-700 dark:text-slate-300 rounded-r-lg fade-in"><h3 class="font-bold text-blue-800 dark:text-blue-400 mb-1"><i class="fa-solid fa-circle-info mr-2"></i>Explanation</h3><p>${data.explanation}</p></div>` : '';
+
+            container.innerHTML = `
+                <div class="fade-in">
+                    <div class="mb-3 flex flex-wrap items-center gap-2">
+                        <span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-700">Module ${data.module}</span>
+                        ${data.type === 'matching' ? '<span class="bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 text-xs font-bold px-2.5 py-0.5 rounded border border-purple-200 dark:border-purple-700"><i class="fa-solid fa-arrows-left-right mr-1"></i>Matching</span>' : ''}
+                        ${data.type === 'multi' ? '<span class="bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-xs font-bold px-2.5 py-0.5 rounded border border-amber-200 dark:border-amber-700"><i class="fa-solid fa-list-check mr-1"></i>Multiple Answer</span>' : ''}
+                    </div>
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 sm:mb-6 leading-snug">${data.question}</h2>
+                    ${exhibitHtml}
+                    ${contentHtml}
+                    ${explanationHtml}
+                </div>
+            `;
+
+            updateButtons();
+        }
+
+        function renderSingleChoiceQuestion(data, qID) {
+            let optionsHtml = '';
+            data.options.forEach((opt, index) => {
+                const isSelected = userAnswers[qID] === index;
+                const isRevealed = revealState[qID];
+                
+                let labelClass = "option-label w-full p-3 sm:p-4 border-2 border-slate-200 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3";
+                let icon = '<div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-500 flex-shrink-0"></div>';
+
+                if (isSelected && !isRevealed) {
+                    labelClass += " border-blue-500 bg-blue-50";
+                    icon = '<div class="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center"><div class="w-2.5 h-2.5 bg-blue-500 rounded-full"></div></div>';
+                }
+
+                if (isRevealed) {
+                    if (index === data.correctIndex) {
+                        labelClass = "option-label w-full p-4 border-2 rounded-lg flex items-center gap-3 correct-answer cursor-default";
+                        icon = '<i class="fa-solid fa-circle-check text-green-600 text-lg"></i>';
+                    } else if (isSelected && index !== data.correctIndex) {
+                        labelClass = "option-label w-full p-4 border-2 rounded-lg flex items-center gap-3 incorrect-answer cursor-default";
+                        icon = '<i class="fa-solid fa-circle-xmark text-red-500 text-lg"></i>';
+                    } else {
+                        labelClass += " opacity-60 cursor-default";
+                    }
+                }
+
+                optionsHtml += `
+                    <label class="${labelClass}">
+                        <input type="radio" name="q${qID}" value="${index}" class="option-input hidden" ${isSelected ? 'checked' : ''} ${isRevealed ? 'disabled' : ''} onchange="selectOption(${index})">
+                        ${icon}
+                        <span class="text-slate-700 dark:text-slate-200 font-medium text-sm sm:text-base">${opt}</span>
+                    </label>
+                `;
+            });
+            return `<div class="space-y-3">${optionsHtml}</div>`;
+        }
+
+        function renderMultiChoiceQuestion(data, qID) {
+            let optionsHtml = '';
+            const selectedAnswers = userAnswers[qID] || [];
+            const isRevealed = revealState[qID];
+
+            data.options.forEach((opt, index) => {
+                const isSelected = selectedAnswers.includes(index);
+                const isCorrect = data.correctIndices.includes(index);
+                
+                let labelClass = "option-label w-full p-3 sm:p-4 border-2 border-slate-200 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3";
+                let icon = '<div class="w-5 h-5 rounded border-2 border-slate-300 dark:border-slate-500 flex-shrink-0"></div>';
+
+                if (isSelected && !isRevealed) {
+                    labelClass += " border-blue-500 bg-blue-50 dark:bg-blue-900/30";
+                    icon = '<div class="w-5 h-5 rounded border-2 border-blue-500 bg-blue-500 flex items-center justify-center"><i class="fa-solid fa-check text-white text-xs"></i></div>';
+                }
+
+                if (isRevealed) {
+                    if (isCorrect) {
+                        labelClass = "option-label w-full p-4 border-2 rounded-lg flex items-center gap-3 correct-answer cursor-default";
+                        icon = '<i class="fa-solid fa-circle-check text-green-600 text-lg"></i>';
+                    } else if (isSelected && !isCorrect) {
+                        labelClass = "option-label w-full p-4 border-2 rounded-lg flex items-center gap-3 incorrect-answer cursor-default";
+                        icon = '<i class="fa-solid fa-circle-xmark text-red-500 text-lg"></i>';
+                    } else {
+                        labelClass += " opacity-60 cursor-default";
+                    }
+                }
+
+                optionsHtml += `
+                    <label class="${labelClass}">
+                        <input type="checkbox" name="q${qID}" value="${index}" class="hidden" ${isSelected ? 'checked' : ''} ${isRevealed ? 'disabled' : ''} onchange="toggleMultiOption(${index})">
+                        ${icon}
+                        <span class="text-slate-700 font-medium">${opt}</span>
+                    </label>
+                `;
+            });
+            return `<div class="space-y-3">${optionsHtml}</div>`;
+        }
+
+        function renderMatchingQuestion(data, qID) {
+            const selections = matchingSelections[qID] || {};
+            const isRevealed = revealState[qID];
+            
+            // Get used items (left items that have been matched)
+            const usedLeftItems = Object.keys(selections);
+            
+            // Shuffle left items for display (but keep consistent during session)
+            if (!window.shuffledLeftItems) window.shuffledLeftItems = {};
+            if (!window.shuffledLeftItems[qID]) {
+                window.shuffledLeftItems[qID] = [...data.matchData.leftItems].sort(() => Math.random() - 0.5);
+            }
+            const shuffledLeftItems = window.shuffledLeftItems[qID];
+            
+            let html = '<div class="grid md:grid-cols-2 gap-4 sm:gap-6">';
+            
+            // Left column - Draggable items (questions/terms)
+            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-hand-pointer mr-2"></i>Items (Drag these)</h3>';
+            shuffledLeftItems.forEach((item, idx) => {
+                const isUsed = usedLeftItems.includes(item);
+                const matchedAnswer = selections[item];
+                let dragCls = 'drag-item p-2 sm:p-3 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-slate-200 text-sm sm:text-base';
+                if (isUsed) dragCls += ' used';
+                
+                html += `<div class="${dragCls}" 
+                    draggable="${!isUsed && !isRevealed}" 
+                    data-left-item="${item}" 
+                    ondragstart="handleDragStart(event, '${item.replace(/'/g, "\\'")}')" 
+                    ondragend="handleDragEnd(event)"
+                    ontouchstart="handleTouchStart(event, '${item.replace(/'/g, "\\\\'")}')"
+                    ontouchmove="handleTouchMove(event)"
+                    ontouchend="handleTouchEnd(event)">
+                    <i class="fa-solid fa-grip-vertical mr-2 text-slate-400 dark:text-slate-500"></i>${item}
+                    ${isUsed ? '<i class="fa-solid fa-check ml-2 text-blue-500"></i>' : ''}
+                </div>`;
+            });
+            html += '</div>';
+            
+            // Right column - Drop zones (answers/definitions)
+            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-bullseye mr-2"></i>Answers (Drop here)</h3>';
+            data.matchData.rightItems.forEach((answer, idx) => {
+                // Find which left item is matched to this answer
+                const matchedLeftItem = Object.keys(selections).find(key => selections[key] === answer);
+                const correctLeftItem = Object.keys(data.matchData.correctPairs).find(key => data.matchData.correctPairs[key] === answer);
+                const isCorrect = isRevealed && matchedLeftItem && matchedLeftItem === correctLeftItem;
+                const isIncorrect = isRevealed && matchedLeftItem && matchedLeftItem !== correctLeftItem;
+                
+                let dropCls = 'drop-zone p-2 sm:p-3 rounded-lg text-sm sm:text-base flex flex-col gap-1';
+                if (matchedLeftItem) dropCls += ' filled';
+                if (isCorrect) dropCls += ' correct';
+                if (isIncorrect) dropCls += ' incorrect';
+                
+                html += `<div class="${dropCls}" 
+                    data-answer="${answer}" 
+                    ondragover="handleDragOver(event)" 
+                    ondragleave="handleDragLeave(event)" 
+                    ondrop="handleDrop(event, '${answer.replace(/'/g, "\\'")}')" 
+                    ${matchedLeftItem && !isRevealed ? `onclick="removeMatch('${matchedLeftItem.replace(/'/g, "\\'")}')" title="Click to remove"` : ''}>
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold ${matchedLeftItem ? (isCorrect ? 'text-green-700 dark:text-green-400' : isIncorrect ? 'text-red-600 dark:text-red-400' : 'text-blue-700 dark:text-blue-400') : 'text-slate-400 dark:text-slate-500 italic'}">
+                            ${matchedLeftItem || 'Drop item here'}
+                        </span>
+                        ${isCorrect ? '<i class="fa-solid fa-check text-green-600"></i>' : ''}
+                        ${isIncorrect ? '<i class="fa-solid fa-xmark text-red-500"></i>' : ''}
+                        <span class="match-arrow dark:text-slate-400 ml-auto"><i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                    <div class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-snug">${answer}</div>
+                    ${isRevealed && isIncorrect && correctLeftItem ? '<div class="text-xs text-green-600 dark:text-green-400 mt-1 bg-green-50 dark:bg-green-900/30 p-1 rounded"><i class="fa-solid fa-check mr-1"></i>Correct: <strong>' + correctLeftItem + '</strong></div>' : ''}
+                    ${isRevealed && !matchedLeftItem && correctLeftItem ? '<div class="text-xs text-amber-600 dark:text-amber-400 mt-1 bg-amber-50 dark:bg-amber-900/30 p-1 rounded"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Answer: <strong>' + correctLeftItem + '</strong></div>' : ''}
+                </div>`;
+            });
+            html += '</div></div>';
+            
+            // Instructions
+            html += `<p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-4"><i class="fa-solid fa-info-circle mr-1"></i>Drag items from the left and drop them on the matching answers. <span class="hidden sm:inline">Click a filled slot to remove.</span> <span class="sm:hidden">Tap and hold to drag on mobile.</span></p>`;
+            
+            // Show correct pairs if revealed
+            if (isRevealed) {
+                html += '<div class="mt-4 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg"><h4 class="font-semibold text-green-800 dark:text-green-400 mb-2"><i class="fa-solid fa-check-double mr-2"></i>Correct Matches:</h4><ul class="space-y-1">';
+                for (let [left, right] of Object.entries(data.matchData.correctPairs)) {
+                    const userAnswer = selections[left];
+                    const isMatch = userAnswer === right;
+                    html += `<li class="${isMatch ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}"><strong>${left}</strong> → ${right} ${isMatch ? '<i class="fa-solid fa-check"></i>' : ''}</li>`;
+                }
+                html += '</ul></div>';
+            }
+            
+            return html;
+        }
+        
+        // Drag and Drop handlers
+        let draggedItem = null;
+        let draggedElement = null;
+        
+        function handleDragStart(event, leftItem) {
+            draggedItem = leftItem;
+            draggedElement = event.target;
+            event.target.classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', leftItem);
+        }
+        
+        function handleDragEnd(event) {
+            event.target.classList.remove('dragging');
+            draggedItem = null;
+            // Remove drag-over class from all drop zones
+            document.querySelectorAll('.drop-zone').forEach(zone => zone.classList.remove('drag-over'));
+        }
+        
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            event.currentTarget.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('drag-over');
+        }
+        
+        function handleDrop(event, answer) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+            
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            if (revealState[qID]) return;
+            
+            const leftItem = event.dataTransfer.getData('text/plain') || draggedItem;
+            if (!leftItem) return;
+            
+            if (!matchingSelections[qID]) matchingSelections[qID] = {};
+            
+            // Check if this left item is already matched elsewhere - remove old match
+            if (matchingSelections[qID][leftItem]) {
+                delete matchingSelections[qID][leftItem];
+            }
+            
+            // Check if this answer already has a different item matched - remove it
+            for (let key in matchingSelections[qID]) {
+                if (matchingSelections[qID][key] === answer) {
+                    delete matchingSelections[qID][key];
+                }
+            }
+            
+            matchingSelections[qID][leftItem] = answer;
+            renderQuestion();
+        }
+        
+        function removeMatch(leftItem) {
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            if (revealState[qID]) return;
+            
+            if (matchingSelections[qID] && matchingSelections[qID][leftItem]) {
+                delete matchingSelections[qID][leftItem];
+                renderQuestion();
+            }
+        }
+        
+        // Touch event handlers for mobile drag and drop
+        let touchDragItem = null;
+        let touchDragElement = null;
+        let touchClone = null;
+        let touchStartY = 0;
+        
+        function handleTouchStart(event, leftItem) {
+            const data = filteredQuizData[currentQuestionIndex];
+            if (revealState[data.id]) return;
+            
+            // Check if item is already used
+            const selections = matchingSelections[data.id] || {};
+            if (Object.keys(selections).includes(leftItem)) return;
+            
+            touchDragItem = leftItem;
+            touchDragElement = event.currentTarget;
+            touchStartY = event.touches[0].clientY;
+            
+            // Add visual feedback
+            touchDragElement.classList.add('dragging');
+            
+            // Create floating clone for visual feedback
+            touchClone = touchDragElement.cloneNode(true);
+            touchClone.style.position = 'fixed';
+            touchClone.style.zIndex = '1000';
+            touchClone.style.pointerEvents = 'none';
+            touchClone.style.opacity = '0.8';
+            touchClone.style.transform = 'scale(1.05)';
+            touchClone.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            document.body.appendChild(touchClone);
+            
+            updateTouchClonePosition(event.touches[0]);
+        }
+        
+        function handleTouchMove(event) {
+            if (!touchDragItem || !touchClone) return;
+            event.preventDefault();
+            
+            updateTouchClonePosition(event.touches[0]);
+            
+            // Highlight drop zone under finger
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('drag-over');
+            });
+            const target = document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
+            if (target) {
+                const dropZone = target.closest('.drop-zone');
+                if (dropZone) {
+                    dropZone.classList.add('drag-over');
+                }
+            }
+        }
+        
+        function handleTouchEnd(event) {
+            if (!touchDragItem) return;
+            
+            // Find drop zone under finger
+            const touch = event.changedTouches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (target) {
+                const dropZone = target.closest('.drop-zone');
+                if (dropZone) {
+                    const answer = dropZone.getAttribute('data-answer');
+                    if (answer) {
+                        performDrop(touchDragItem, answer);
+                    }
+                }
+            }
+            
+            // Cleanup
+            if (touchDragElement) touchDragElement.classList.remove('dragging');
+            if (touchClone) touchClone.remove();
+            document.querySelectorAll('.drop-zone').forEach(zone => zone.classList.remove('drag-over'));
+            
+            touchDragItem = null;
+            touchDragElement = null;
+            touchClone = null;
+        }
+        
+        function updateTouchClonePosition(touch) {
+            if (!touchClone) return;
+            touchClone.style.left = (touch.clientX - 100) + 'px';
+            touchClone.style.top = (touch.clientY - 25) + 'px';
+            touchClone.style.width = '200px';
+        }
+        
+        function performDrop(leftItem, answer) {
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            if (revealState[qID]) return;
+            
+            if (!matchingSelections[qID]) matchingSelections[qID] = {};
+            
+            // Check if this left item is already matched elsewhere - remove old match
+            if (matchingSelections[qID][leftItem]) {
+                delete matchingSelections[qID][leftItem];
+            }
+            
+            // Check if this answer already has a different item matched - remove it
+            for (let key in matchingSelections[qID]) {
+                if (matchingSelections[qID][key] === answer) {
+                    delete matchingSelections[qID][key];
+                }
+            }
+            
+            matchingSelections[qID][leftItem] = answer;
+            renderQuestion();
+        }
+
+        function selectOption(index) {
+            const qID = filteredQuizData[currentQuestionIndex].id;
+            if (revealState[qID]) return;
+            userAnswers[qID] = index;
+            renderQuestion();
+        }
+
+        function toggleMultiOption(index) {
+            const qID = filteredQuizData[currentQuestionIndex].id;
+            if (revealState[qID]) return;
+            if (!userAnswers[qID]) userAnswers[qID] = [];
+            const idx = userAnswers[qID].indexOf(index);
+            if (idx > -1) {
+                userAnswers[qID].splice(idx, 1);
+            } else {
+                userAnswers[qID].push(index);
+            }
+            renderQuestion();
+        }
+
+        // selectMatchAnswer is no longer used - replaced by drag and drop
+        function selectMatchAnswer(answer) {
+            // Legacy function - kept for compatibility
+            console.log('Use drag and drop instead');
+        }
+
+        function revealAnswer() {
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            revealState[qID] = true;
+            
+            // DO NOT auto-populate for matching questions - keep user's wrong answers visible
+            // so they can see their mistakes with red highlighting
+            
+            renderQuestion();
+        }
+
+        function resetCurrentQuestion() {
+            const qID = filteredQuizData[currentQuestionIndex].id;
+            userAnswers[qID] = null;
+            revealState[qID] = false;
+            matchingSelections[qID] = {};
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < filteredQuizData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function updateButtons() {
+            const qID = filteredQuizData[currentQuestionIndex].id;
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === filteredQuizData.length - 1;
+            
+            if (revealState[qID]) {
+                revealBtn.style.display = 'none';
+                resetBtn.style.display = 'flex';
+                resetBtn.classList.add('flex-1');
+            } else {
+                revealBtn.style.display = 'flex';
+                resetBtn.style.display = 'flex';
+                resetBtn.classList.remove('flex-1');
+            }
+        }
+
+        // Dark mode toggle function
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        }
+        
+        // Initialize dark mode from localStorage or system preference
+        function initDarkMode() {
+            const stored = localStorage.getItem('darkMode');
+            if (stored !== null) {
+                if (stored === 'true') document.documentElement.classList.add('dark');
+            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        
+        initDarkMode();
+        initQuiz();
+    </script>
+</body>
+</html>
