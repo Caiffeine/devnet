@@ -109,6 +109,9 @@
                 
                 <!-- Reset and Reveal buttons - first row on mobile -->
                 <div class="flex gap-2 sm:gap-3 w-full sm:w-auto order-first sm:order-none">
+                    <button id="shuffle-btn" onclick="shuffleQuestions()" class="shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-fuchsia-50 dark:bg-fuchsia-900/30 border border-fuchsia-200 dark:border-fuchsia-700 text-fuchsia-700 dark:text-fuchsia-400 rounded-lg font-medium hover:bg-fuchsia-100 dark:hover:bg-fuchsia-900/50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-shuffle"></i> Shuffle
+                    </button>
                     <button id="reset-btn" onclick="resetCurrentQuestion()" class="shadow-md flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-700 dark:text-yellow-400 rounded-lg font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
                         <i class="fa-solid fa-rotate-right"></i> Reset
                     </button>
@@ -143,6 +146,29 @@
             <p>Complete Study Set: DevNet Associate Modules 5, 6, 7, & 8 (65 Questions)</p>
         </div>
     </footer>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center transition-opacity opacity-0" style="transition: opacity 0.2s ease-in-out;">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-slate-200 dark:border-slate-700 transform scale-95 transition-transform duration-200" id="modal-content">
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-400 mx-auto flex items-center justify-center mb-4 ring-4 ring-fuchsia-50 dark:ring-fuchsia-900/20">
+                    <i class="fa-solid fa-dice text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Shuffle Questions?</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                    This will randomize the order of all questions and answer choices in the current quiz.
+                </p>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                        Cancel
+                    </button>
+                    <button onclick="confirmShuffle()" class="flex-1 px-4 py-2.5 bg-fuchsia-600 text-white rounded-xl font-medium hover:bg-fuchsia-700 shadow-lg shadow-fuchsia-600/20 transition-all hover:scale-[1.02]">
+                        Yes, Shuffle
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const allQuizData = [
@@ -291,6 +317,7 @@
         const nextBtnMobile = document.getElementById('next-btn-mobile');
         const revealBtn = document.getElementById('reveal-btn');
         const resetBtn = document.getElementById('reset-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
         const retakeBtnNav = document.getElementById('retake-btn-nav');
 
         function filterQuestions() {
@@ -864,6 +891,109 @@
             renderQuestion(false);
         }
 
+        function shuffleQuestions() {
+            const modal = document.getElementById('confirm-modal');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function confirmShuffle() {
+            // 1. Shuffle the order of questions
+            for (let i = filteredQuizData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [filteredQuizData[i], filteredQuizData[j]] = [filteredQuizData[j], filteredQuizData[i]];
+            }
+
+            // 2. Shuffle choices within each question
+            filteredQuizData.forEach(q => {
+                const qID = q.id;
+
+                // Handle Matching Questions (reset shuffle state so it re-randomizes on render)
+                if (q.type === 'matching') {
+                    if (window.shuffledLeftItems && window.shuffledLeftItems[qID]) {
+                        delete window.shuffledLeftItems[qID];
+                    }
+                    return;
+                }
+
+                // Handle Single/Multi Choice
+                if (!q.options || q.options.length < 2) return;
+
+                // Create array of indices [0, 1, 2...]
+                let indices = q.options.map((_, i) => i);
+                
+                // Shuffle indices
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+
+                // Remap options
+                const newOptions = indices.map(i => q.options[i]);
+                
+                // Update correct index/indices map
+                let newCorrectIndex;
+                let newCorrectIndices;
+
+                if (q.type === 'multi') {
+                    // Find where the old correct indices moved to
+                    newCorrectIndices = indices
+                        .map((oldIdx, newPos) => q.correctIndices.includes(oldIdx) ? newPos : -1)
+                        .filter(idx => idx !== -1);
+                } else {
+                    // Find where the old correct index moved to
+                    newCorrectIndex = indices.indexOf(q.correctIndex);
+                }
+
+                // Update user answers map if user has already answered
+                if (userAnswers[qID] !== undefined && userAnswers[qID] !== null) {
+                    if (q.type === 'multi') {
+                        const oldUserIndices = userAnswers[qID];
+                        userAnswers[qID] = indices
+                            .map((oldIdx, newPos) => oldUserIndices.includes(oldIdx) ? newPos : -1)
+                            .filter(idx => idx !== -1);
+                    } else {
+                        const oldUserIdx = userAnswers[qID];
+                        userAnswers[qID] = indices.indexOf(oldUserIdx);
+                    }
+                }
+
+                // Apply changes to the question object
+                q.options = newOptions;
+                if (q.type === 'multi') {
+                    q.correctIndices = newCorrectIndices;
+                } else {
+                    q.correctIndex = newCorrectIndex;
+                }
+            });
+            
+            // Go back to first question
+            currentQuestionIndex = 0;
+            renderQuestionNav();
+            renderQuestion();
+            closeConfirmModal();
+        }
+
         function nextQuestion() {
             if (currentQuestionIndex < filteredQuizData.length - 1) {
                 currentQuestionIndex++;
@@ -1022,6 +1152,7 @@
                 // Review Mode: Hide Reveal & Reset, Show Retake
                 revealBtn.style.display = 'none';
                 resetBtn.style.display = 'none';
+                if (shuffleBtn) shuffleBtn.style.display = 'none';
                 if (retakeBtnNav) {
                     retakeBtnNav.style.display = 'flex';
                     retakeBtnNav.classList.add('flex-1');
@@ -1032,10 +1163,12 @@
                 
                 if (revealState[qID]) {
                     revealBtn.style.display = 'none';
+                    if (shuffleBtn) shuffleBtn.style.display = 'none';
                     resetBtn.style.display = 'flex';
                     resetBtn.classList.add('flex-1');
                 } else {
                     revealBtn.style.display = 'flex';
+                    if (shuffleBtn) shuffleBtn.style.display = 'flex';
                     resetBtn.style.display = 'flex';
                     resetBtn.classList.remove('flex-1');
                 }
