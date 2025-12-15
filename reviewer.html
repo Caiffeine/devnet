@@ -98,7 +98,7 @@
                 <div id="question-dots" class="flex flex-wrap gap-1.5 justify-center"></div>
             </div>
             <div id="quiz-container" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 relative overflow-hidden min-h-[350px] sm:min-h-[400px] transition-colors"></div>
-            <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 sticky bottom-2 sm:bottom-4 z-10">
+            <div id="quiz-controls" class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 sticky bottom-2 sm:bottom-4 z-10">
                 <!-- Desktop: Prev | Reset Reveal | Next -->
                 <!-- Mobile: Reset Reveal (top) | Prev Next (bottom) -->
                 
@@ -314,6 +314,12 @@
         }
 
         function initQuiz() {
+            // Ensure UI is visible (in case it was hidden by results screen)
+            const nav = document.getElementById('question-nav');
+            const controls = document.getElementById('quiz-controls');
+            if (nav) nav.style.display = 'block';
+            if (controls) controls.style.display = 'flex';
+
             totalQNum.textContent = filteredQuizData.length;
             renderQuestionNav();
             renderQuestion();
@@ -1147,8 +1153,9 @@
                 </div>
             `;
             
-            // Hide navigation buttons
-            document.querySelector('.sticky.bottom-2').style.display = 'none';
+            // Hide navigation buttons and question navigator
+            document.getElementById('quiz-controls').style.display = 'none';
+            document.getElementById('question-nav').style.display = 'none';
             progressBar.style.width = '100%';
         }
         
@@ -1158,7 +1165,8 @@
                 revealState[q.id] = true;
             });
             currentQuestionIndex = 0;
-            document.querySelector('.sticky.bottom-2').style.display = 'flex';
+            document.getElementById('quiz-controls').style.display = 'flex';
+            document.getElementById('question-nav').style.display = 'block';
             renderQuestion();
         }
         
@@ -1170,7 +1178,8 @@
                 matchingSelections[q.id] = {};
             });
             currentQuestionIndex = 0;
-            document.querySelector('.sticky.bottom-2').style.display = 'flex';
+            document.getElementById('quiz-controls').style.display = 'flex';
+            document.getElementById('question-nav').style.display = 'block';
             renderQuestion();
         }
 
