@@ -928,11 +928,29 @@
             filteredQuizData.forEach(q => {
                 const qID = q.id;
 
-                // Handle Matching Questions (reset shuffle state so it re-randomizes on render)
+                // Handle Matching Questions
                 if (q.type === 'matching') {
+                    // Reset the display shuffle cache for left items
                     if (window.shuffledLeftItems && window.shuffledLeftItems[qID]) {
                         delete window.shuffledLeftItems[qID];
                     }
+                    
+                    // Shuffle the actual left items in data (draggables)
+                    if (q.matchData && q.matchData.leftItems) {
+                         for (let i = q.matchData.leftItems.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [q.matchData.leftItems[i], q.matchData.leftItems[j]] = [q.matchData.leftItems[j], q.matchData.leftItems[i]];
+                        }
+                    }
+                    
+                    // Shuffle the right items in data (drop zones)
+                    if (q.matchData && q.matchData.rightItems) {
+                         for (let i = q.matchData.rightItems.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [q.matchData.rightItems[i], q.matchData.rightItems[j]] = [q.matchData.rightItems[j], q.matchData.rightItems[i]];
+                        }
+                    }
+                    
                     return;
                 }
 
