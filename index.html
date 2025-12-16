@@ -54,9 +54,57 @@
         }
         .drag-item.dragging { opacity: 0.5; transform: scale(0.95); background-color: #dbeafe !important; }
         .dark .drag-item.dragging { background-color: #1e3a5f !important; }
+        /* Toast notification styles */
+        .toast {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .toast.show { top: 20px; }
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .toast-on {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        .toast-off {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+        }
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .toast-on .toast-icon { background: rgba(255,255,255,0.25); }
+        .toast-off .toast-icon { background: rgba(255,255,255,0.2); }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div id="toast-content" class="toast-content toast-on">
+            <span id="toast-icon" class="toast-icon"><i class="fa-solid fa-bolt"></i></span>
+            <span id="toast-message">Auto Check is on</span>
+        </div>
+    </div>
 
     <header class="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-20 transition-colors">
         <div class="max-w-4xl mx-auto px-3 sm:px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3">
@@ -374,6 +422,34 @@
             autoRevealEnabled = !autoRevealEnabled;
             localStorage.setItem('autoReveal', autoRevealEnabled);
             updateAutoRevealButton();
+            showAutoRevealToast();
+        }
+
+        function showAutoRevealToast() {
+            const toast = document.getElementById('toast');
+            const content = document.getElementById('toast-content');
+            const icon = document.getElementById('toast-icon');
+            const message = document.getElementById('toast-message');
+            
+            if (autoRevealEnabled) {
+                content.classList.remove('toast-off');
+                content.classList.add('toast-on');
+                icon.innerHTML = '<i class="fa-solid fa-bolt"></i>';
+                message.textContent = 'Auto Check is on';
+            } else {
+                content.classList.remove('toast-on');
+                content.classList.add('toast-off');
+                icon.innerHTML = '<i class="fa-solid fa-bolt-slash"></i>';
+                message.textContent = 'Auto Check is off';
+            }
+            
+            // Show toast
+            toast.classList.add('show');
+            
+            // Hide after 2 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
         }
 
         function updateAutoRevealButton() {
