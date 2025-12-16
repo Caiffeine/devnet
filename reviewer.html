@@ -83,6 +83,9 @@
                     <i class="fa-solid fa-moon text-slate-600 dark:hidden"></i>
                     <i class="fa-solid fa-sun text-yellow-400 hidden dark:inline"></i>
                 </button>
+                <button id="auto-reveal-btn" onclick="toggleAutoReveal()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Auto Reveal (off)">
+                    <i class="fa-solid fa-bolt text-slate-400 dark:text-slate-500"></i>
+                </button>
             </div>
         </div>
     </header>
@@ -364,6 +367,58 @@
         let userAnswers = {};
         let revealState = {};
         let matchingSelections = {};
+        let autoRevealEnabled = localStorage.getItem('autoReveal') === 'true';
+
+        // Auto-reveal toggle function
+        function toggleAutoReveal() {
+            autoRevealEnabled = !autoRevealEnabled;
+            localStorage.setItem('autoReveal', autoRevealEnabled);
+            updateAutoRevealButton();
+        }
+
+        function updateAutoRevealButton() {
+            const btn = document.getElementById('auto-reveal-btn');
+            if (!btn) return;
+            const icon = btn.querySelector('i');
+            if (autoRevealEnabled) {
+                icon.classList.remove('text-slate-400', 'dark:text-slate-500');
+                icon.classList.add('text-amber-500', 'dark:text-amber-400');
+                btn.title = 'Auto Reveal (on)';
+                btn.classList.add('ring-2', 'ring-amber-400', 'dark:ring-amber-500');
+            } else {
+                icon.classList.remove('text-amber-500', 'dark:text-amber-400');
+                icon.classList.add('text-slate-400', 'dark:text-slate-500');
+                btn.title = 'Auto Reveal (off)';
+                btn.classList.remove('ring-2', 'ring-amber-400', 'dark:ring-amber-500');
+            }
+        }
+
+        // Check if answer is complete for auto-reveal
+        function isAnswerComplete(data, qID) {
+            if (data.type === 'matching') {
+                const selections = matchingSelections[qID] || {};
+                const requiredPairs = Object.keys(data.matchData.correctPairs).length;
+                return Object.keys(selections).length >= requiredPairs;
+            } else if (data.type === 'multi') {
+                const selected = userAnswers[qID] || [];
+                const requiredCount = data.correctIndices.length;
+                return selected.length >= requiredCount;
+            } else {
+                return userAnswers[qID] !== undefined && userAnswers[qID] !== null;
+            }
+        }
+
+        // Try auto-reveal if enabled and answer is complete
+        function tryAutoReveal() {
+            if (!autoRevealEnabled) return;
+            const data = filteredQuizData[currentQuestionIndex];
+            const qID = data.id;
+            if (revealState[qID]) return; // Already revealed
+            if (isAnswerComplete(data, qID)) {
+                revealState[qID] = true;
+                renderQuestion(false);
+            }
+        }
 
         const container = document.getElementById('quiz-container');
         const progressBar = document.getElementById('progress-bar');
@@ -407,6 +462,9 @@
             const controls = document.getElementById('quiz-controls');
             if (nav) nav.style.display = 'block';
             if (controls) controls.style.display = 'flex';
+
+            // Update auto-reveal button state
+            updateAutoRevealButton();
 
             totalQNum.textContent = filteredQuizData.length;
             renderQuestionNav();
@@ -582,6 +640,12 @@
             // Get used items (left items that have been matched)
             const usedLeftItems = Object.keys(selections);
             
+            // Calculate match progress
+            const requiredPairs = Object.keys(data.matchData.correctPairs).length;
+            const currentMatches = Object.keys(selections).length;
+            const matchProgress = `${currentMatches}/${requiredPairs}`;
+            const isComplete = currentMatches >= requiredPairs;
+            
             // Shuffle left items for display (but keep consistent during session)
             if (!window.shuffledLeftItems) window.shuffledLeftItems = {};
             if (!window.shuffledLeftItems[qID]) {
@@ -591,8 +655,14 @@
             
             let html = '<div class="grid md:grid-cols-2 gap-4 sm:gap-6">';
             
-            // Left column - Draggable items (questions/terms)
-            html += '<div class="space-y-2 sm:space-y-3"><h3 class="font-semibold text-slate-600 dark:text-slate-400 mb-2 text-sm sm:text-base"><i class="fa-solid fa-hand-pointer mr-2"></i>Items (Tap or Drag)</h3>';
+            // Left column - Draggable items (questions/terms) with progress indicator
+            html += `<div class="space-y-2 sm:space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-slate-600 dark:text-slate-400 text-sm sm:text-base"><i class="fa-solid fa-hand-pointer mr-2"></i>Items (Tap or Drag)</h3>
+                    <span class="text-xs font-bold px-2 py-1 rounded-full ${isComplete ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400' : 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400'}">
+                        <i class="fa-solid ${isComplete ? 'fa-check-circle' : 'fa-link'} mr-1"></i>${matchProgress} matched
+                    </span>
+                </div>`;
             shuffledLeftItems.forEach((item, idx) => {
                 const isUsed = usedLeftItems.includes(item);
                 const isSelected = selectedLeftItem === item;
@@ -730,6 +800,7 @@
             
             matchingSelections[qID][leftItem] = answer;
             renderQuestion(false);
+            tryAutoReveal();
         }
         
         function removeMatch(leftItem) {
@@ -791,6 +862,7 @@
                 matchingSelections[qID][selectedLeftItem] = answer;
                 selectedLeftItem = null; // Clear selection
                 renderQuestion(false);
+                tryAutoReveal();
             } else if (matchedLeftItem) {
                 // No selection but there's a match - remove it
                 removeMatch(matchedLeftItem);
@@ -905,6 +977,7 @@
             
             matchingSelections[qID][leftItem] = answer;
             renderQuestion(false);
+            tryAutoReveal();
         }
 
         function selectOption(index) {
@@ -912,6 +985,7 @@
             if (revealState[qID]) return;
             userAnswers[qID] = index;
             renderQuestion(false);
+            tryAutoReveal();
         }
 
         function toggleMultiOption(index) {
@@ -925,6 +999,7 @@
                 userAnswers[qID].push(index);
             }
             renderQuestion(false);
+            tryAutoReveal();
         }
 
         // selectMatchAnswer is no longer used - replaced by drag and drop
